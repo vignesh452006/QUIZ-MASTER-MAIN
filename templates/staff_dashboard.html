@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Command | Quiz Master</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --neon-main: #00ffcc;
+            --neon-alt: #00ccff;
+            --dark-core: #020205;
+        }
+
+        body, html {
+            min-height: 100%;
+            margin: 0;
+            background-color: var(--dark-core);
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* 1. BACKGROUND ENGINE */
+        .void-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #0a2e24 0%, #020205 100%);
+            z-index: -1;
+        }
+
+        .hex-grid {
+            position: absolute;
+            width: 100%; height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTMwIDBMMDYwIDE1VjQ1TDMwIDYwTDAgNDVWMTVMzMCAweiIgc3Ryb2tlPSJyZ2JhKDAsIDI1NSwgMjA0LCAwLjA1KSIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==');
+            animation: move-bg 60s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes move-bg {
+            from { background-position: 0 0; }
+            to { background-position: 1000px 1000px; }
+        }
+
+        /* 2. CYBER NAVBAR */
+        .navbar-custom {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(0, 255, 204, 0.2);
+            padding: 15px 0;
+        }
+
+        .navbar-brand {
+            font-family: 'Syncopate', sans-serif;
+            font-weight: 700;
+            color: var(--neon-main) !important;
+            letter-spacing: 2px;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.7) !important;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--neon-main) !important;
+            text-shadow: 0 0 10px var(--neon-main);
+        }
+
+        /* 3. SEARCH FIELD */
+        .cyber-search {
+            background: rgba(255,255,255,0.05) !important;
+            border: 1px solid rgba(0, 255, 204, 0.3) !important;
+            color: white !important;
+            font-family: monospace;
+        }
+
+        /* 4. HUB PANEL */
+        .dashboard-wrap {
+            padding: 60px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .command-panel {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 50px;
+            width: 100%;
+            max-width: 750px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .glitch-header {
+            font-family: 'Syncopate', sans-serif;
+            font-weight: 700;
+            color: var(--neon-main);
+            letter-spacing: 5px;
+            text-shadow: 0 0 15px var(--neon-main);
+        }
+
+        /* 5. PLASMA BUTTONS */
+        .btn-dash {
+            padding: 18px;
+            background: transparent;
+            border: 1px solid var(--neon-main);
+            color: var(--neon-main);
+            font-weight: 700;
+            letter-spacing: 2px;
+            transition: 0.4s;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn-dash:hover {
+            background: var(--neon-main);
+            color: #000;
+            box-shadow: 0 0 30px var(--neon-main);
+            transform: translateX(10px);
+        }
+
+        .btn-manage { border-color: var(--neon-alt); color: var(--neon-alt); }
+        .btn-manage:hover { background: var(--neon-alt); box-shadow: 0 0 30px var(--neon-alt); }
+
+        .btn-results { border-color: #ffcc00; color: #ffcc00; }
+        .btn-results:hover { background: #ffcc00; box-shadow: 0 0 30px #ffcc00; }
+
+    </style>
+</head>
+
+<body>
+
+<div class="void-bg">
+    <div class="hex-grid"></div>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-custom px-4 sticky-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('home') }}">🧠 QUIZ_MASTER</a>
+        
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#staffNav">
+            <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="staffNav">
+            <form class="d-flex ms-lg-4 my-2 my-lg-0" method="get" action="{{ url_for('staff_search_students') }}">
+                <input class="form-control form-control-sm cyber-search me-2" type="search" name="q" placeholder="SCAN_DATABASE...">
+                <button class="btn btn-sm btn-outline-info" type="submit">🔍</button>
+            </form>
+
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">🏠 HOME</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('summary') }}">📊 SUMMARY</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('profile') }}">👤 PROFILE</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('settings') }}">⚙️ SETTINGS</a></li>
+                <li class="nav-item">
+                    <a class="nav-link text-danger fw-bold" href="{{ url_for('logout') }}">🚪 DISCONNECT</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="dashboard-wrap">
+    <div class="command-panel">
+        <h2 class="glitch-header mb-2">STAFF_COMMAND</h2>
+        <p class="text-white-50 mb-5 small" style="letter-spacing: 3px;">
+            AUTHORIZED_OPERATOR: <span style="color: var(--neon-alt);">{{ username }}</span>
+        </p>
+
+        <div class="d-grid gap-4">
+            <a href="{{ url_for('create_quiz') }}" class="btn btn-dash">
+                <span>📝</span> CREATE_QUIZ_SEQUENCES
+            </a>
+
+            <a href="{{ url_for('manage_quizzes') }}" class="btn btn-dash btn-manage">
+                <span>👥</span> MANAGE_EXISTING_MODULES
+            </a>
+
+            <a href="{{ url_for('view_results') }}" class="btn btn-dash btn-results">
+                <span>📊</span> STUDENT_ANALYTICS_CORE
+            </a>
+        </div>
+
+        <p class="mt-5 text-muted small" style="letter-spacing: 5px; opacity: 0.5;">
+            SYSTEM_STATUS: OPERATIONAL // CLEARANCE_LEVEL: 02
+        </p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

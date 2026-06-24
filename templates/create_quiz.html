@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Quiz | Staff Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body { background-color: #f4f7f6; }
+        .question-box { border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 15px; background: #fff; position: relative; transition: all 0.3s; }
+        .question-box:hover { border-color: #6f42c1; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        .ai-section { border: 2px solid #6f42c1; background-color: #f8f0ff; padding: 20px; border-radius: 10px; margin-bottom: 30px; }
+        .form-label { font-weight: bold; color: #444; }
+        .btn-ai { background-color: #6f42c1; color: white; border: none; }
+        .btn-ai:hover { background-color: #59359a; color: white; }
+        .delete-btn { position: absolute; top: 10px; right: 10px; color: #dc3545; cursor: pointer; border: none; background: none; }
+    </style>
+
+    <script>
+        let qCount = 0;
+
+        function addQuestion(qText = "", a = "", b = "", c = "", d = "", correctIndex = null) {
+            qCount++;
+            const container = document.getElementById("questions");
+            const box = document.createElement("div");
+            box.className = "question-box shadow-sm";
+            box.id = `q-block-${qCount}`;
+
+            // Correct mapping for dropdown
+            const letters = ['a', 'b', 'c', 'd'];
+            const correctValue = (correctIndex !== null && correctIndex >= 0) ? letters[correctIndex] : "";
+
+            box.innerHTML = `
+                <button type="button" class="delete-btn" onclick="removeQuestion(${qCount})">&times; Remove</button>
+                <h6>Question ${qCount}</h6>
+                <input type="text" name="question_${qCount}" class="form-control mb-2" value="${qText}" placeholder="Enter question text" required>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">A</span>
+                            <input type="text" name="q${qCount}_a" class="form-control" value="${a}" placeholder="Option A" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">B</span>
+                            <input type="text" name="q${qCount}_b" class="form-control" value="${b}" placeholder="Option B" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">C</span>
+                            <input type="text" name="q${qCount}_c" class="form-control" value="${c}" placeholder="Option C" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">D</span>
+                            <input type="text" name="q${qCount}_d" class="form-control" value="${d}" placeholder="Option D" required>
+                        </div>
+                    </div>
+                </div>
+                <label class="small text-muted">Select Correct Answer:</label>
+                <select name="q${qCount}_correct" class="form-select" required>
+                    <option value="">-- Choose --</option>
+                    <option value="a" ${correctValue === 'a' ? 'selected' : ''}>Option A</option>
+                    <option value="b" ${correctValue === 'b' ? 'selected' : ''}>Option B</option>
+                    <option value="c" ${correctValue === 'c' ? 'selected' : ''}>Option C</option>
+                    <option value="d" ${correctValue === 'd' ? 'selected' : ''}>Option D</option>
+                </select>
+            `;
+            container.appendChild(box);
+        }
+
+        function removeQuestion(id) {
+            const el = document.getElementById(`q-block-${id}`);
+            if (el) el.remove();
+        }
+
+        async function generateAI() {
+            const topicInput = document.getElementById("ai-topic");
+            const numInput = document.getElementById("ai-num");
+            const btn = document.getElementById("ai-btn");
+
+            if (!topicInput.value) { alert("Please enter a topic!"); return; }
+
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Generating...`;
+
+            const formData = new FormData();
+            formData.append("topic", topicInput.value);
+            formData.append("num_questions", numInput.value);
+
+            try {
+                const response = await fetch("/ai_generate_quiz", { method: "POST", body: formData });
+                const data = await response.json();
+
+                if (data.status === "success" && data.questions) {
+                    document.getElementById("questions").innerHTML = "";
+                    qCount = 0;
+
+                    data.questions.forEach(q => {
+                        addQuestion(q.question, q.options[0], q.options[1], q.options[2], q.options[3], q.answer);
+                    });
+
+                    document.getElementById("main-subject").value = topicInput.value;
+                } else {
+                    alert("AI Error: " + (data.error || data.message || "Unknown error"));
+                }
+            } catch (e) {
+                alert("Connection Error: Check server logs.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Generate Questions";
+            }
+        }
+
+        window.onload = () => { if (qCount === 0) addQuestion(); };
+    </script>
+</head>
+
+<body>
+<div class="container mt-4 mb-5">
+    <div class="ai-section shadow-sm">
+        <h4>✨ AI Quiz Generator</h4>
+        <p class="text-muted small">Let Gemini help you build questions in seconds.</p>
+        <div class="row g-2">
+            <div class="col-md-5">
+                <input type="text" id="ai-topic" class="form-control" placeholder="Topic (e.g. Data Structures)">
+            </div>
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-text">Qty</span>
+                    <input type="number" id="ai-num" class="form-control" value="3" min="1" max="10">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <button type="button" id="ai-btn" onclick="generateAI()" class="btn btn-ai w-100">Generate Questions</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-4 shadow">
+        <h3 class="mb-4">📝 Quiz Details</h3>
+        <form method="POST">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Subject</label>
+                    <input type="text" name="subject" id="main-subject" class="form-control" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Chapter/Unit</label>
+                    <input type="text" name="chapter" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">Quiz Date</label>
+                    <input type="date" name="date" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Duration (min)</label>
+                    <input type="number" name="duration" class="form-control" value="30" required>
+                </div>
+            </div>
+
+            <hr>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Questions List</h5>
+                <button type="button" onclick="addQuestion()" class="btn btn-sm btn-outline-primary">+ Add New</button>
+            </div>
+            
+            <div id="questions">
+                </div>
+
+            <div class="d-flex justify-content-end mt-4">
+                <a href="{{ url_for('staff_dashboard') }}" class="btn btn-light border me-2">Cancel</a>
+                <button type="submit" class="btn btn-success px-5">Save Quiz</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

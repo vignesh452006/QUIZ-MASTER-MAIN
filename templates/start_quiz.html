@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Interface - Quiz Master Arena</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --neon-main: #00ffcc;
+            --neon-alt: #00ccff;
+            --neon-danger: #ff2d55;
+            --dark-core: #020205;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        body, html {
+            background-color: var(--dark-core);
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* SYNCED BACKGROUND */
+        .void-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #0a0a2e 0%, #020205 100%);
+            z-index: -1;
+        }
+
+        .hex-grid {
+            position: absolute;
+            width: 100%; height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTMwIDBMMDYwIDE1VjQ1TDMwIDYwTDAgNDVWMTVMzMCAweiIgc3Ryb2tlPSJyZ2JhKDAsIDI1NSwgMjA0LCAwLjA1KSIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==');
+            opacity: 0.3;
+        }
+
+        /* STICKY HUD HEADER */
+        .quiz-hud {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(2, 2, 5, 0.9);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--neon-main);
+            padding: 15px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .timer-unit {
+            border: 1px solid var(--neon-danger);
+            padding: 5px 15px;
+            border-radius: 8px;
+            color: var(--neon-danger);
+            text-align: center;
+            min-width: 100px;
+        }
+
+        /* QUESTION CARDS */
+        .data-node {
+            background: var(--glass);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--neon-alt);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .data-node:hover {
+            border-color: var(--neon-alt);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* CUSTOM SELECTION INPUTS */
+        .option-label {
+            display: block;
+            position: relative;
+            padding: 12px 12px 12px 50px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+            transition: 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .option-label:hover {
+            background: rgba(0, 204, 255, 0.1);
+            border-color: rgba(0, 204, 255, 0.3);
+        }
+
+        .option-label input { position: absolute; opacity: 0; }
+
+        .custom-radio {
+            position: absolute;
+            top: 15px; left: 15px;
+            height: 20px; width: 20px;
+            background: transparent;
+            border: 2px solid #444;
+            border-radius: 50%;
+        }
+
+        .option-label input:checked ~ .custom-radio {
+            background: var(--neon-alt);
+            border-color: var(--neon-alt);
+            box-shadow: 0 0 15px var(--neon-alt);
+        }
+
+        /* SUBMIT BUTTON */
+        .btn-submit-arena {
+            background: transparent;
+            border: 2px solid var(--neon-main);
+            color: var(--neon-main);
+            padding: 15px 60px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            border-radius: 50px;
+            transition: 0.4s;
+            margin: 40px auto;
+            display: block;
+        }
+
+        .btn-submit-arena:hover {
+            background: var(--neon-main);
+            color: #000;
+            box-shadow: 0 0 40px var(--neon-main);
+        }
+    </style>
+
+    <script>
+        // Set time left in seconds (e.g., 600 seconds = 10 minutes)
+        let timeLeft = 600; 
+
+        function startTimer() {
+            const timerDisplay = document.getElementById("timer");
+            
+            const countdown = setInterval(() => {
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+
+                // Format: MM:SS
+                timerDisplay.innerText = 
+                    (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+                    (seconds < 10 ? "0" + seconds : seconds);
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    alert("TIME EXPIRED. TRANSMITTING COLLECTED DATA.");
+                    document.getElementById("quizForm").submit();
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        window.onload = startTimer;
+    </script>
+</head>
+<body>
+
+<div class="void-bg">
+    <div class="hex-grid"></div>
+</div>
+
+<header class="quiz-hud">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div>
+            <div class="text-white-50 small">SUBJECT_NODE</div>
+            <div style="font-family: 'Syncopate'; font-weight: 700; color: var(--neon-main);">
+                {{ quiz.subject }} // {{ quiz.chapter }}
+            </div>
+        </div>
+        <div class="timer-unit">
+            <small style="font-size: 0.6rem; display: block; opacity: 0.7;">CORE_STABILITY</small>
+            <span id="timer" class="fw-bold">10:00</span>
+        </div>
+    </div>
+</header>
+
+<div class="container py-5">
+    <form method="post" id="quizForm">
+        {% for q in questions %}
+        <div class="data-node">
+            <div class="mb-3">
+                <span style="color: var(--neon-alt); font-weight: 800;">Q.{{ loop.index }}</span>
+                <span class="ms-2" style="letter-spacing: 1px;">{{ q.text }}</span>
+            </div>
+            
+            <div class="options-area">
+                {% for opt in q.options %}
+                <label class="option-label">
+                    <input type="radio" name="{{ q.id }}" value="{{ opt.id }}" required>
+                    <span class="custom-radio"></span>
+                    {{ opt.text }}
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn-submit-arena">SUBMIT_RESULTS</button>
+    </form>
+
+    <div class="text-center mt-5 text-muted small" style="letter-spacing: 5px; opacity: 0.5;">
+        NEURAL LINK STABLE // DATA_ENCRYPTION_V4
+    </div>
+</div>
+
+</body>
+</html>

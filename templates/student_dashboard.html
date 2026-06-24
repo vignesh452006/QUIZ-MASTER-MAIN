@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Terminal | Quiz Master</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --neon-main: #00ffcc;
+            --neon-alt: #00ccff;
+            --dark-core: #020205;
+        }
+
+        body, html {
+            min-height: 100%;
+            margin: 0;
+            background-color: var(--dark-core);
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* 1. REUSED BACKGROUND ENGINE */
+        .void-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #0a1a2e 0%, #020205 100%);
+            z-index: -1;
+        }
+
+        .hex-grid {
+            position: absolute;
+            width: 100%; height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTMwIDBMMDYwIDE1VjQ1TDMwIDYwTDAgNDVWMTVMzMCAweiIgc3Ryb2tlPSJyZ2JhKDAsIDIwNCwgMjU1LCAwLjA1KSIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==');
+            opacity: 0.3;
+            animation: move-bg 60s linear infinite;
+        }
+
+        @keyframes move-bg {
+            from { background-position: 0 0; }
+            to { background-position: 1000px 1000px; }
+        }
+
+        /* 2. CYBER NAVBAR */
+        .navbar-custom {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(0, 204, 255, 0.2);
+            padding: 1rem 2rem;
+        }
+
+        .navbar-brand {
+            font-family: 'Syncopate', sans-serif;
+            font-weight: 700;
+            color: var(--neon-alt) !important;
+            text-shadow: 0 0 10px var(--neon-alt);
+            letter-spacing: 2px;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.7) !important;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover { color: var(--neon-main) !important; }
+
+        .search-input {
+            background: rgba(255,255,255,0.05) !important;
+            border: 1px solid rgba(0, 255, 204, 0.3) !important;
+            color: white !important;
+            font-family: monospace;
+        }
+
+        /* 3. DASHBOARD GLASS CARD */
+        .dashboard-wrap {
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 1000px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .terminal-header {
+            font-family: 'Syncopate', sans-serif;
+            color: var(--neon-main);
+            letter-spacing: 4px;
+        }
+
+        /* 4. ACTION BUTTONS (Glow Style) */
+        .btn-dash {
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            padding: 12px 25px;
+            border-radius: 8px;
+            transition: 0.4s;
+            text-transform: uppercase;
+            text-decoration: none;
+            border: 1px solid transparent;
+            display: inline-block;
+        }
+
+        .btn-attempt { border-color: var(--neon-alt); color: var(--neon-alt); background: transparent; }
+        .btn-attempt:hover { background: var(--neon-alt); color: #000; box-shadow: 0 0 20px var(--neon-alt); }
+
+        .btn-results { border-color: var(--neon-main); color: var(--neon-main); background: transparent; }
+        .btn-results:hover { background: var(--neon-main); color: #000; box-shadow: 0 0 20px var(--neon-main); }
+
+        .btn-quizzes { border-color: #f1c40f; color: #f1c40f; background: transparent; }
+        .btn-quizzes:hover { background: #f1c40f; color: #000; box-shadow: 0 0 20px #f1c40f; }
+
+        /* 5. TECH TABLE STYLING */
+        .table-container {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 30px;
+        }
+
+        .table-cyber {
+            margin-bottom: 0;
+            background: rgba(0, 0, 0, 0.2) !important;
+            color: #ddd;
+        }
+
+        .table-cyber thead th {
+            background: rgba(0, 204, 255, 0.1) !important;
+            color: var(--neon-alt);
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            border: none;
+            padding: 15px;
+        }
+
+        .table-cyber tbody td {
+            border-color: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+        .btn-action-sm {
+            font-size: 0.65rem;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 700;
+            border: 1px solid;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="void-bg">
+    <div class="hex-grid"></div>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('home') }}">🧠 QUIZ_STUDENT_OS</a>
+        
+        <div class="collapse navbar-collapse show" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">NODE:HOME</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('student_summary') }}">ANALYTICS</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('profile') }}">USER:PROFILE</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('settings') }}">CONFIG</a></li>
+                <li class="nav-item">
+                    <a class="nav-link text-danger fw-bold" href="{{ url_for('logout') }}">TERMINATE_SESSION</a>
+                </li>
+
+                <li class="nav-item ms-lg-3">
+                    <form class="d-flex" method="get" action="{{ url_for('view_quizzes') }}">
+                        <input class="form-control form-control-sm search-input me-2" type="search" name="q" placeholder="SCAN SUBJECTS...">
+                        <button class="btn btn-sm btn-outline-cyan" type="submit" style="color: var(--neon-main); border-color: var(--neon-main);">🔍</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="dashboard-wrap container">
+    <div class="dashboard-card">
+        
+        <div class="mb-4">
+            <h2 class="terminal-header">STUDENT_DASHBOARD</h2>
+            <p class="small text-white-50" style="letter-spacing: 2px;">
+                ACTIVE_USER: <span class="text-white">{{ username }}</span> | STATUS: AUTHENTICATED
+            </p>
+        </div>
+
+        <div class="d-flex justify-content-center flex-wrap gap-3 mb-5">
+            <a href="{{ url_for('attempt_quiz') }}" class="btn-dash btn-attempt">📝 Attempt Quiz</a>
+            <a href="{{ url_for('view_results') }}" class="btn-dash btn-results">📊 View Results</a>
+            <a href="{{ url_for('view_quizzes') }}" class="btn-dash btn-quizzes">📚 View Quizzes</a>
+        </div>
+
+        <h5 class="text-white-50 mb-3" style="font-size: 0.8rem; letter-spacing: 3px;">⏳ PENDING_MISSIONS</h5>
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="table table-cyber text-center">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>SECTOR (SUBJECT)</th>
+                            <th>MODULE (CHAPTER)</th>
+                            <th>TIMESTAMP</th>
+                            <th>DURATION</th>
+                            <th>PROTOCOLS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if upcoming_quizzes %}
+                        {% for q in upcoming_quizzes %}
+                        <tr>
+                            <td class="text-white-50 small">#{{ loop.index }}</td>
+                            <td class="fw-bold">{{ q.subject }}</td>
+                            <td>{{ q.chapter }}</td>
+                            <td class="small">{{ q.date }}</td>
+                            <td>{{ q.duration }}m</td>
+                            <td>
+                                <a href="{{ url_for('view_quiz', quiz_id=q.id) }}" 
+                                   class="btn-action-sm btn-outline-info me-1">PREVIEW</a>
+                                <a href="{{ url_for('start_quiz', quiz_id=q.id) }}" 
+                                   class="btn-action-sm btn-outline-primary" 
+                                   style="border-color: var(--neon-main); color: var(--neon-main);">INITIALIZE</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="py-5 text-muted small" style="letter-spacing: 3px;">
+                                NO_UPCOMING_MISSIONS_DETECTED
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-5 pt-3 border-top border-secondary opacity-25">
+            <p class="text-center mb-0" style="font-size: 0.6rem; letter-spacing: 5px;">
+                SYSTEM_ENCRYPTION_ACTIVE // 256-BIT_ACCESS
+            </p>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

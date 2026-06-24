@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Attempt Quiz</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Orbitron Cyber Font -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+background: radial-gradient(circle at top,#0f2027,#050b15,#000000);
+font-family:'Orbitron',sans-serif;
+color:white;
+min-height:100vh;
+}
+
+.cyber-card{
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(15px);
+border:1px solid rgba(0,255,255,0.2);
+border-radius:15px;
+box-shadow:0 0 20px rgba(0,255,255,0.3);
+padding:30px;
+}
+
+.cyber-question{
+background:rgba(0,0,0,0.4);
+border:1px solid rgba(0,255,255,0.3);
+border-radius:10px;
+padding:15px;
+margin-bottom:15px;
+box-shadow:0 0 10px rgba(0,255,255,0.15);
+}
+
+.timer-box{
+background:rgba(0,0,0,0.5);
+border:1px solid #00ffff;
+color:#00ffff;
+padding:8px 18px;
+border-radius:8px;
+font-weight:bold;
+box-shadow:0 0 10px #00ffff;
+}
+
+.cyber-btn{
+background:transparent;
+border:1px solid #00ffff;
+color:#00ffff;
+}
+
+.cyber-btn:hover{
+background:#00ffff;
+color:black;
+box-shadow:0 0 10px #00ffff;
+}
+
+.form-select{
+background:rgba(0,0,0,0.6);
+color:white;
+border:1px solid #00ffff;
+}
+
+.form-check-input:checked{
+background-color:#00ffff;
+border-color:#00ffff;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container py-5">
+
+<div class="cyber-card">
+
+<h3 class="text-center mb-4">⚡ CYBER QUIZ TERMINAL</h3>
+
+{% if quizzes %}
+
+<form method="get">
+
+<label class="form-label">Select Quiz Module</label>
+
+<select name="quiz_id" class="form-select mb-3" required>
+
+<option value="">-- Choose a quiz --</option>
+
+{% for q in quizzes %}
+<option value="{{ q.id }}">
+{{ q.subject }} - {{ q.chapter }}
+</option>
+{% endfor %}
+
+</select>
+
+<div class="text-center">
+<button type="submit" class="btn cyber-btn">Load Quiz</button>
+</div>
+
+</form>
+
+{% endif %}
+
+{% if quiz %}
+
+<hr class="my-4">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<h5>{{ quiz.subject }} - {{ quiz.chapter }}</h5>
+
+<div class="timer-box">
+⏳ Time Left : <span id="time">--:--</span>
+</div>
+
+</div>
+
+<form method="post" id="quizForm">
+
+<input type="hidden" name="quiz_id" value="{{ quiz.id }}">
+
+{% for q in quiz.questions %}
+
+<div class="cyber-question">
+
+<p><strong>{{ loop.index }}. {{ q.text }}</strong></p>
+
+{% for opt in q.options %}
+
+<div class="form-check">
+
+<input class="form-check-input"
+type="radio"
+name="q{{ q.id }}"
+value="{{ opt.id }}"
+required>
+
+<label class="form-check-label">
+{{ opt.text }}
+</label>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endfor %}
+
+<div class="text-center mt-4">
+<button type="submit" class="btn cyber-btn">Submit Quiz</button>
+</div>
+
+</form>
+
+<input type="hidden" id="duration" value="{{ quiz.duration }}">
+
+{% endif %}
+
+<div class="text-center mt-4">
+<a href="{{ url_for('student_dashboard') }}" class="btn cyber-btn">
+⬅ Back
+</a>
+</div>
+
+</div>
+</div>
+
+{% if quiz %}
+
+<script>
+
+let duration = parseInt(document.getElementById("duration").value) * 60;
+let display = document.getElementById("time");
+let form = document.getElementById("quizForm");
+
+function startTimer(){
+
+let timer = duration;
+
+const interval = setInterval(function(){
+
+let minutes = Math.floor(timer / 60);
+let seconds = timer % 60;
+
+minutes = minutes < 10 ? "0"+minutes : minutes;
+seconds = seconds < 10 ? "0"+seconds : seconds;
+
+display.textContent = minutes + ":" + seconds;
+
+if(--timer < 0){
+clearInterval(interval);
+alert("⏰ Time is up! Submitting your quiz...");
+form.submit();
+}
+
+},1000);
+
+}
+
+window.onload = startTimer;
+
+</script>
+
+{% endif %}
+
+</body>
+</html>

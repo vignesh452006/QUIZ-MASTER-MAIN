@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Root Command | Quiz Master Admin</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --neon-main: #00ffcc;
+            --neon-alt: #00ccff;
+            --neon-danger: #ff2d55;
+            --dark-core: #020205;
+        }
+
+        body, html {
+            min-height: 100%;
+            margin: 0;
+            background-color: var(--dark-core);
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* 1. SHARED BACKGROUND ENGINE */
+        .void-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #0a0a2e 0%, #020205 100%);
+            z-index: -1;
+        }
+
+        .hex-grid {
+            position: absolute;
+            width: 100%; height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTMwIDBMMDYwIDE1VjQ1TDMwIDYwTDAgNDVWMTVMzMCAweiIgc3Ryb2tlPSJyZ2JhKDAsIDI1NSwgMjA0LCAwLjA1KSIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==');
+            animation: move-bg 60s linear infinite;
+            opacity: 0.2;
+        }
+
+        @keyframes move-bg {
+            from { background-position: 0 0; }
+            to { background-position: 1000px 1000px; }
+        }
+
+        /* 2. CYBER NAVIGATION */
+        .navbar-custom {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--neon-main);
+            padding: 1rem 2rem;
+        }
+
+        .navbar-brand {
+            font-family: 'Syncopate', sans-serif;
+            font-weight: 700;
+            color: var(--neon-main) !important;
+            text-shadow: 0 0 10px var(--neon-main);
+            letter-spacing: 2px;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.7) !important;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover { color: var(--neon-alt) !important; }
+
+        /* 3. SECTION CARDS */
+        .admin-wrap { padding: 40px 20px; }
+
+        .section-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .section-title {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 1rem;
+            color: var(--neon-main);
+            margin-bottom: 25px;
+            border-left: 4px solid var(--neon-main);
+            padding-left: 15px;
+            letter-spacing: 2px;
+        }
+
+        /* 4. TERMINAL TABLES */
+        .table-custom-container {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .table-dark-cyber {
+            margin-bottom: 0;
+            background: rgba(0, 0, 0, 0.4) !important;
+            color: #ddd;
+        }
+
+        .table-dark-cyber th {
+            background: rgba(0, 255, 204, 0.1) !important;
+            color: var(--neon-main);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            padding: 15px;
+            border: none;
+        }
+
+        .table-dark-cyber td {
+            border-color: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+        /* 5. BUTTONS */
+        .btn-cyber {
+            font-size: 0.7rem;
+            font-weight: 700;
+            border: 1px solid var(--neon-main);
+            color: var(--neon-main);
+            background: transparent;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-cyber:hover {
+            background: var(--neon-main);
+            color: black;
+            box-shadow: 0 0 15px var(--neon-main);
+        }
+
+        .btn-purge {
+            border-color: var(--neon-danger);
+            color: var(--neon-danger);
+        }
+
+        .btn-purge:hover {
+            background: var(--neon-danger);
+            color: white;
+            box-shadow: 0 0 15px var(--neon-danger);
+        }
+
+        /* 6. MODAL & INPUTS */
+        .modal-content {
+            background: #050505;
+            border: 1px solid var(--neon-main);
+            border-radius: 15px;
+        }
+
+        .search-input {
+            background: rgba(255,255,255,0.05) !important;
+            border: 1px solid rgba(0, 255, 204, 0.3) !important;
+            color: white !important;
+        }
+
+        .badge-cyber {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            background: rgba(0, 204, 255, 0.1);
+            color: var(--neon-alt);
+            border: 1px solid var(--neon-alt);
+        }
+    </style>
+</head>
+<body>
+
+<div class="void-bg"><div class="hex-grid"></div></div>
+
+<nav class="navbar navbar-expand-lg navbar-custom px-4 sticky-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('home') }}">QUIZ_CORE_OS</a>
+        
+        <button class="navbar-toggler btn-cyber" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">NODE:HOME</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_summary') }}">ANALYTICS</a></li>
+                <li class="nav-item"><a class="nav-link text-danger fw-bold" href="{{ url_for('logout') }}">TERMINATE_SESSION</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="admin-wrap container">
+    
+    <div class="mb-5">
+        <h2 style="font-family: 'Syncopate'; font-weight: 700; letter-spacing: 2px;">
+            <span style="color: var(--neon-main);">ROOT_ACCESS:</span> DASHBOARD
+        </h2>
+        <p class="text-white-50 small">OPERATOR_ID: <span class="text-white">{{ username }}</span> | STATUS: <span class="text-success">ENCRYPTED_LINK_ACTIVE</span></p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} bg-dark text-{{ category }} border-{{ category }} small mb-4">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="section-card">
+        <div class="section-title">SUBJECTS: REGISTERED_ENTITIES</div>
+        <div class="table-responsive table-custom-container">
+            <table class="table table-dark table-dark-cyber">
+                <thead>
+                    <tr><th>#</th><th>IDENTIFIER</th><th>COMMS_LINK</th><th>ROLE</th><th>PROTOCOLS</th></tr>
+                </thead>
+                <tbody>
+                    {% for s in users.items %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td class="fw-bold">{{ s.username }}</td>
+                        <td class="text-white-50">{{ s.email }}</td>
+                        <td>
+    <span class="badge-cyber">
+        {% if s.staff %}
+            STAFF
+        {% elif s.student %}
+            STUDENT
+        {% else %}
+            USER
+        {% endif %}
+    </span>
+</td>
+                        <td>
+                            <button class="btn btn-cyber me-2" onclick="openEditModal('{{ s.id }}','{{ s.username }}','{{ s.email }}')">MODIFY</button>
+                            <a href="{{ url_for('admin_delete_user', user_id=s.id) }}" class="btn btn-cyber btn-purge" onclick="return confirm('ERASE ENTITY PERMANENTLY?')">PURGE</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="text-center text-muted">NO ENTITIES REGISTERED</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="section-title mb-0">DATA_SET: ACTIVE_QUIZZES</div>
+           
+        </div>
+        
+        <div class="table-responsive table-custom-container">
+            <table class="table table-dark table-dark-cyber">
+                <thead>
+                    <tr><th>ID</th><th>SECTOR (SUBJECT)</th><th>UNIT (CHAPTER)</th><th>CREATION_STAMP</th><th>ACTION</th></tr>
+                </thead>
+                <tbody>
+                    {% for q in quizzes.items %}
+                    <tr>
+                        <td>{{ q.id }}</td>
+                        <td><span style="color: var(--neon-alt);">{{ q.subject }}</span></td>
+                        <td>{{ q.chapter }}</td>
+                        <td class="text-white-50 small">{{ q.date }}</td>
+                        <td>
+                            <div class="d-flex">
+                                <a href="{{ url_for('view_quiz', quiz_id=q.id) }}" class="btn btn-cyber me-2" style="border-color: var(--neon-alt); color: var(--neon-alt);">ACCESS</a>
+                                <a href="{{ url_for('delete_quiz', quiz_id=q.id) }}" class="btn btn-cyber btn-purge" onclick="return confirm('DELETE QUIZ DATA?')">ERASE</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="text-center text-muted">NO QUIZ DATA DETECTED</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h5 class="modal-title font-monospace" style="color: var(--neon-main);">MODIFY_ENTITY_PARAMS</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" id="editUserForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="small text-white-50 mb-2">NEW_IDENTIFIER</label>
+                        <input type="text" name="username" id="editUsername" class="form-control search-input" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="small text-white-50 mb-2">NEW_COMMS_LINK</label>
+                        <input type="email" name="email" id="editEmail" class="form-control search-input" required>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1);">
+                    <button type="submit" class="btn btn-cyber w-100 py-2">EXECUTE_PATCH</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function openEditModal(id, name, email){
+    document.getElementById("editUsername").value = name;
+    document.getElementById("editEmail").value = email;
+    // Update form action to point to your backend route
+    document.getElementById("editUserForm").action = "/admin/edit_user/" + id;
+    var myModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+    myModal.show();
+}
+</script>
+
+</body>
+</html>

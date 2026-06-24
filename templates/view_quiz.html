@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mission Briefing | Preview</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --neon-alt: #00ccff; --neon-main: #00ffcc; --dark: #020205; }
+        body { background: var(--dark); color: white; font-family: 'Orbitron', sans-serif; padding: 40px; }
+        .preview-card {
+            background: rgba(255,255,255,0.03);
+            border-left: 4px solid var(--neon-alt);
+            padding: 25px; margin-bottom: 20px; border-radius: 8px;
+        }
+        .btn-cyber {
+            border: 1px solid var(--neon-alt); color: var(--neon-alt);
+            background: transparent; padding: 10px 25px; text-decoration: none; text-transform: uppercase;
+            font-weight: bold; transition: 0.3s;
+        }
+        .btn-cyber:hover { background: var(--neon-alt); color: black; box-shadow: 0 0 15px var(--neon-alt); }
+        .correct-indicator { color: var(--neon-main); font-size: 0.75rem; border: 1px solid var(--neon-main); padding: 2px 5px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mb-5">
+            <h1 style="color: var(--neon-alt); letter-spacing: 2px;">FILE_PREVIEW: {{ quiz.subject }}</h1>
+            <p class="text-white-50">SECTOR: {{ quiz.chapter }} | ALLOTTED_TIME: {{ quiz.duration }} MINS</p>
+        </div>
+
+        {% for q in questions %}
+        <div class="preview-card">
+            <h5 class="mb-3">Q{{ loop.index }}: {{ q.text }}</h5>
+            <div class="row">
+                {% for opt in q.options %}
+                <div class="col-md-6 mb-2">
+                    <div class="p-3 border border-secondary rounded d-flex justify-content-between align-items-center">
+                        <span>{{ opt.text }}</span>
+                        
+                        {# SECURITY: Hide the correct answer if the user is a student #}
+                        {% if role != 'student' and opt.is_correct %}
+                            <span class="correct-indicator">CORRECT_SEQUENCE</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="mt-5 d-flex gap-3">
+            <a href="javascript:history.back()" class="btn-cyber">← RETURN</a>
+            
+            {% if role == 'student' %}
+                <a href="{{ url_for('start_quiz', quiz_id=quiz.id) }}" class="btn-cyber" style="border-color: var(--neon-main); color: var(--neon-main);">INITIALIZE_EXAM</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Identity Registry - Quiz Master Arena</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --neon-main: #00ffcc;
+            --neon-alt: #00ccff;
+            --dark-core: #020205;
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            background-color: var(--dark-core);
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* 1. BACKGROUND ENGINE (Synced with Home) */
+        .void-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #0a0a2e 0%, #020205 100%);
+            z-index: -1;
+        }
+
+        .hex-grid {
+            position: absolute;
+            width: 100%; height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTMwIDBMMDYwIDE1VjQ1TDMwIDYwTDAgNDVWMTVMzMCAweiIgc3Ryb2tlPSJyZ2JhKDAsIDI1NSwgMjA0LCAwLjA1KSIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==');
+            animation: move-bg 60s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes move-bg {
+            from { background-position: 0 0; }
+            to { background-position: 1000px 1000px; }
+        }
+
+        /* 2. REGISTRATION CARD (Neon Glass) */
+        .register-container {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 45px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+            animation: emerge 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes emerge {
+            from { opacity: 0; transform: scale(0.9) translateY(40px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .title-sm {
+            font-family: 'Syncopate', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--neon-main);
+            text-shadow: 0 0 10px var(--neon-main);
+            margin-bottom: 2rem;
+        }
+
+        /* 3. ROLE SELECTION TOGGLES */
+        .role-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: #666;
+            font-weight: 700;
+            border-radius: 10px;
+            transition: 0.4s;
+            font-size: 0.8rem;
+        }
+
+        .role-btn.active {
+            border-color: var(--neon-main);
+            color: var(--neon-main);
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+            background: rgba(0, 255, 204, 0.05);
+        }
+
+        /* 4. PLASMA INPUTS */
+        .input-group-cyber {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-group-cyber input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-group-cyber input:focus {
+            border-color: var(--neon-alt);
+            box-shadow: 0 0 15px rgba(0, 204, 255, 0.2);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        /* 5. EXECUTE BUTTON */
+        .btn-execute {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 800;
+            background: transparent;
+            border: 2px solid var(--neon-main);
+            color: var(--neon-main);
+            transition: 0.4s;
+            margin-top: 10px;
+        }
+
+        .btn-execute:hover {
+            background: var(--neon-main);
+            color: #000;
+            box-shadow: 0 0 30px var(--neon-main);
+            transform: translateY(-3px);
+        }
+
+        .link-path {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.75rem;
+            margin-top: 20px;
+            display: inline-block;
+            transition: 0.3s;
+        }
+
+        .link-path:hover {
+            color: var(--neon-alt);
+            letter-spacing: 1px;
+        }
+
+        .scanline {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(0, 255, 204, 0.1);
+            animation: scan 4s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+    </style>
+
+    <script>
+        function selectRole(role) {
+            document.getElementById("role").value = role;
+            document.querySelectorAll(".role-btn").forEach(b => b.classList.remove("active"));
+            document.getElementById(role).classList.add("active");
+        }
+    </script>
+</head>
+<body>
+
+<div class="void-bg">
+    <div class="hex-grid"></div>
+</div>
+
+<div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
+    
+    <div class="register-container text-center">
+        <div class="scanline"></div>
+        
+        <h2 class="title-sm">NEW IDENTITY</h2>
+        <p class="text-white-50 small mb-4">INITIALIZING ENROLLMENT PROTOCOL...</p>
+
+        <div class="role-box">
+            <button type="button" id="staff" class="role-btn" onclick="selectRole('staff')">STAFF UNIT</button>
+            <button type="button" id="student" class="role-btn" onclick="selectRole('student')">CANDIDATE</button>
+        </div>
+
+        <form method="post" action="{{ url_for('register') }}">
+            <input type="hidden" name="role" id="role" required>
+
+            <div class="input-group-cyber">
+                <input type="text" name="username" placeholder="USERNAME" required>
+            </div>
+            
+            <div class="input-group-cyber">
+                <input type="email" name="email" placeholder="EMAIL ADDRESS" required>
+            </div>
+
+            <div class="input-group-cyber">
+                <input type="password" name="password" placeholder="ACCESS KEY" required>
+            </div>
+
+            <button type="submit" class="btn-execute">EXECUTE REGISTER</button>
+        </form>
+
+        <div class="d-flex flex-column">
+            <a href="{{ url_for('login') }}" class="link-path">EXISTING IDENTITY? LOGIN_SESSION</a>
+            <a href="{{ url_for('home') }}" class="link-path">← BACK_TO_INTERFACE</a>
+        </div>
+    </div>
+
+    <p class="mt-4 text-muted small" style="letter-spacing: 3px; opacity: 0.5;">
+        CORE // IDENTITY_MANAGEMENT // V2.6
+    </p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sys Config | Root</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <style>
+        body { background: #020205; color: white; font-family: 'Orbitron', sans-serif; display: flex; align-items: center; min-height: 100vh; }
+        .config-panel { background: rgba(0, 255, 204, 0.02); border: 1px solid rgba(0, 255, 204, 0.2); padding: 50px; border-radius: 30px; margin: auto; max-width: 600px; border-left: 5px solid #00ffcc; }
+        .feature-tag { font-size: 0.7rem; color: #00ffcc; background: rgba(0,255,204,0.1); padding: 5px 12px; border-radius: 50px; display: inline-block; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="config-panel">
+        <span class="feature-tag">SECURITY_LEVEL: OMNI</span>
+        <h2 class="mb-4" style="letter-spacing: 5px;">SYSTEM_SETTINGS</h2>
+        <p class="text-white-50 mb-4">Core platform parameters and global overrides.</p>
+        
+        <ul class="list-unstyled mb-5">
+            <li class="mb-3 text-info">▶ <strong>ENCRYPTION:</strong> ACTIVE (AES-256)</li>
+            <li class="mb-3">▶ <strong>AI_SYNTHESIS:</strong> ENABLED</li>
+            <li class="mb-3">▶ <strong>ROOT_ACCESS:</strong> RESTRICTED</li>
+        </ul>
+
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-info px-5">← RETURN_TO_DASHBOARD</a>
+    </div>
+</div>
+</body>
+</html>
