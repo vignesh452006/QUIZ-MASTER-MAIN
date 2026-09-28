@@ -2,67 +2,2204 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Analytics | Quiz Master</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Quiz Results</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
     <style>
-        body { background: #020205; color: white; font-family: 'Orbitron', sans-serif; }
-        .glass-panel { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(0, 255, 204, 0.2); border-radius: 20px; padding: 40px; margin-bottom: 50px;}
-        .score-glow { color: #00ffcc; text-shadow: 0 0 10px #00ffcc; font-weight: bold; }
-        .subject-tag { color: #00ccff; font-weight: bold; text-transform: uppercase; font-size: 0.85rem; }
-        .table-cyber { border: 1px solid rgba(255,255,255,0.1); }
-        .table-cyber thead { background: rgba(0, 204, 255, 0.1); color: #00ccff; letter-spacing: 1px; }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1250px;
+            margin: 30px auto 60px;
+        }
+
+        /* ================= HEADER ================= */
+
+        .header {
+            background: linear-gradient(
+                135deg,
+                #4f46e5,
+                #6366f1,
+                #7c3aed
+            );
+
+            color: white;
+
+            padding: 32px;
+
+            border-radius: 22px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 15px 40px rgba(79, 70, 229, 0.25);
+        }
+
+        .header h1 {
+            font-size: 34px;
+            margin-bottom: 7px;
+        }
+
+        .header-subtitle {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .header-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .btn {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 7px;
+
+            padding: 11px 17px;
+
+            border-radius: 10px;
+
+            border: none;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            transition: 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: white;
+            color: #4f46e5;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-dark {
+            background: #111827;
+            color: white;
+        }
+
+        /* ================= SUMMARY ================= */
+
+        .summary-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(5, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: white;
+
+            padding: 22px 15px;
+
+            border-radius: 17px;
+
+            text-align: center;
+
+            box-shadow:
+                0 6px 22px rgba(0,0,0,0.06);
+        }
+
+        .summary-icon {
+            font-size: 25px;
+            margin-bottom: 5px;
+        }
+
+        .summary-title {
+            font-size: 12px;
+
+            text-transform: uppercase;
+
+            color: #6b7280;
+
+            font-weight: 700;
+        }
+
+        .summary-value {
+            margin-top: 5px;
+
+            font-size: 28px;
+
+            font-weight: 800;
+
+            color: #111827;
+        }
+
+        /* ================= MAIN GRID ================= */
+
+        .main-grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 22px;
+
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+
+            border-radius: 20px;
+
+            padding: 25px;
+
+            box-shadow:
+                0 6px 22px rgba(0,0,0,0.06);
+        }
+
+        .card-title {
+            margin-bottom: 20px;
+        }
+
+        .card-title h2 {
+            color: #111827;
+
+            font-size: 21px;
+
+            margin-bottom: 3px;
+        }
+
+        .card-title p {
+            color: #6b7280;
+
+            font-size: 13px;
+        }
+
+        /* ================= CHART ================= */
+
+        .chart-container {
+            position: relative;
+
+            height: 310px;
+        }
+
+        /* ================= PERFORMANCE ================= */
+
+        .performance-box {
+            margin-top: 20px;
+        }
+
+        .performance-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-bottom: 8px;
+
+            font-weight: 700;
+        }
+
+        .large-progress {
+            height: 13px;
+
+            width: 100%;
+
+            background: #e5e7eb;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+        }
+
+        .large-progress-bar {
+            height: 100%;
+
+            width: 0%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #4f46e5,
+                    #7c3aed
+                );
+
+            border-radius: 20px;
+
+            transition: width 1s ease;
+        }
+
+        /* ================= RECOMMENDATION ================= */
+
+        .recommendation {
+            background:
+                linear-gradient(
+                    135deg,
+                    #eef2ff,
+                    #f5f3ff
+                );
+
+            border-left:
+                5px solid #6366f1;
+        }
+
+        .recommendation-level {
+            display: inline-block;
+
+            background: #e0e7ff;
+
+            color: #4338ca;
+
+            padding: 7px 13px;
+
+            border-radius: 20px;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            margin-bottom: 14px;
+        }
+
+        .recommendation-message {
+            margin-bottom: 16px;
+
+            color: #374151;
+        }
+
+        .steps {
+            padding-left: 22px;
+
+            margin-top: 8px;
+        }
+
+        .steps li {
+            margin-bottom: 7px;
+        }
+
+        .tip-box,
+        .plan-box {
+            background: white;
+
+            padding: 15px;
+
+            border-radius: 12px;
+
+            margin-top: 17px;
+        }
+
+        .tip-box strong,
+        .plan-box strong {
+            color: #4338ca;
+
+            display: block;
+
+            margin-bottom: 5px;
+        }
+
+        /* ================= QUESTION REVIEW ================= */
+
+        .question-section {
+            margin-top: 25px;
+        }
+
+        .review-toolbar {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            justify-content: space-between;
+
+            gap: 12px;
+
+            margin-bottom: 20px;
+        }
+
+        .filter-buttons {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 7px;
+        }
+
+        .filter-btn {
+            background: white;
+
+            color: #374151;
+
+            border:
+                1px solid #d1d5db;
+
+            padding: 8px 13px;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #4f46e5;
+
+            color: white;
+
+            border-color: #4f46e5;
+        }
+
+        .question-count {
+            color: #6b7280;
+
+            font-size: 13px;
+
+            align-self: center;
+        }
+
+        .question-card {
+            background: white;
+
+            border-radius: 15px;
+
+            padding: 22px;
+
+            margin-bottom: 15px;
+
+            border-left: 5px solid #d1d5db;
+
+            box-shadow:
+                0 5px 18px rgba(0,0,0,0.05);
+        }
+
+        .question-card.correct {
+            border-left-color: #16a34a;
+        }
+
+        .question-card.incorrect {
+            border-left-color: #dc2626;
+        }
+
+        .question-card.unanswered {
+            border-left-color: #f59e0b;
+        }
+
+        .question-card.hidden {
+            display: none;
+        }
+
+        .question-top {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            gap: 15px;
+
+            margin-bottom: 16px;
+        }
+
+        .question-number {
+            color: #4f46e5;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            margin-bottom: 5px;
+        }
+
+        .question-text {
+            font-size: 17px;
+
+            font-weight: 700;
+
+            color: #111827;
+        }
+
+        .status {
+            flex-shrink: 0;
+
+            padding: 6px 12px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: 800;
+        }
+
+        .status.correct {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status.incorrect {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status.unanswered {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* ================= ANSWERS ================= */
+
+        .answer-grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 14px;
+        }
+
+        .answer-box {
+            padding: 15px;
+
+            border-radius: 11px;
+
+            background: #f9fafb;
+
+            border: 1px solid #e5e7eb;
+        }
+
+        .answer-box.your-correct {
+            background: #ecfdf5;
+
+            border-color: #86efac;
+        }
+
+        .answer-box.your-wrong {
+            background: #fef2f2;
+
+            border-color: #fca5a5;
+        }
+
+        .answer-box.correct-answer {
+            background: #eff6ff;
+
+            border-color: #93c5fd;
+        }
+
+        .answer-label {
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            color: #6b7280;
+
+            font-weight: 800;
+
+            margin-bottom: 5px;
+        }
+
+        .answer-value {
+            color: #111827;
+
+            font-size: 14px;
+
+            word-break: break-word;
+        }
+
+        /* ================= SUBJECT PERFORMANCE ================= */
+
+        .subject-section {
+            margin-top: 25px;
+        }
+
+        .subject-list {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 15px;
+        }
+
+        .subject-item {
+            background: #f9fafb;
+
+            border-radius: 12px;
+
+            padding: 16px;
+        }
+
+        .subject-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-bottom: 8px;
+
+            font-weight: 700;
+        }
+
+        .progress {
+            width: 100%;
+
+            height: 9px;
+
+            background: #e5e7eb;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 0%;
+
+            height: 100%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #4f46e5,
+                    #7c3aed
+                );
+
+            border-radius: 20px;
+
+            transition: width 1s ease;
+        }
+
+        .subject-meta {
+            margin-top: 7px;
+
+            color: #6b7280;
+
+            font-size: 13px;
+        }
+
+        /* ================= HISTORY ================= */
+
+        .history-section {
+            margin-top: 25px;
+        }
+
+        .table-wrapper {
+            width: 100%;
+
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 13px;
+
+            text-align: left;
+
+            border-bottom:
+                1px solid #e5e7eb;
+
+            white-space: nowrap;
+        }
+
+        th {
+            background: #f9fafb;
+
+            color: #6b7280;
+
+            font-size: 12px;
+
+            text-transform: uppercase;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        /* ================= EMPTY ================= */
+
+        .empty {
+            background: white;
+
+            border-radius: 20px;
+
+            padding: 60px 20px;
+
+            text-align: center;
+
+            box-shadow:
+                0 6px 22px rgba(0,0,0,0.06);
+        }
+
+        .empty-icon {
+            font-size: 45px;
+
+            margin-bottom: 12px;
+        }
+
+        .empty h2 {
+            margin-bottom: 8px;
+        }
+
+        .empty p {
+            color: #6b7280;
+        }
+
+        /* ================= BACK TO TOP ================= */
+
+        .back-top {
+            position: fixed;
+
+            right: 22px;
+
+            bottom: 22px;
+
+            width: 45px;
+
+            height: 45px;
+
+            border: none;
+
+            border-radius: 50%;
+
+            background: #4f46e5;
+
+            color: white;
+
+            font-size: 20px;
+
+            cursor: pointer;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            z-index: 100;
+        }
+
+        .back-top.show {
+            display: flex;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1050px) {
+
+            .summary-grid {
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 850px) {
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .answer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 94%;
+                margin-top: 15px;
+            }
+
+            .header {
+                padding: 25px 20px;
+            }
+
+            .header h1 {
+                font-size: 27px;
+            }
+
+            .summary-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .summary-value {
+                font-size: 23px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .question-top {
+                flex-direction: column;
+            }
+
+            .header-actions {
+                flex-direction: column;
+            }
+
+            .header-actions .btn {
+                width: 100%;
+            }
+
+            .chart-container {
+                height: 270px;
+            }
+        }
+
+        /* ================= PRINT ================= */
+
+        @media print {
+
+            body {
+                background: white;
+            }
+
+            .header-actions,
+            .filter-buttons,
+            .back-top {
+                display: none !important;
+            }
+
+            .container {
+                width: 100%;
+                max-width: none;
+                margin: 0;
+            }
+
+            .card,
+            .summary-card,
+            .question-card {
+                box-shadow: none;
+                break-inside: avoid;
+            }
+        }
+
     </style>
 </head>
+
+
 <body>
-<div class="container mt-5">
-    <div class="glass-panel">
-        <h3 class="mb-4">
-            {% if role == 'staff' %} 📊 GLOBAL_ANALYTICS {% else %} 📊 PERSONAL_LOGS {% endif %}
-        </h3>
 
-        {% if results %}
-        <div class="table-responsive">
-            <table class="table table-dark table-cyber align-middle">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        {% if role == 'staff' %}<th>OPERATOR</th>{% endif %}
-                        <th>MISSION_SECTOR (SUBJECT)</th> <th>MARKS_OBTAINED</th> 
-                        <th>TIMESTAMP</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for r in results %}
-                    <tr>
-                        <td>{{ loop.index }}</td>
-                        {% if role == 'staff' %}
-                            <td>{{ r.student.username }}</td>
-                        {% endif %}
-                        
-                        <td class="subject-tag">
-                            {{ r.quiz.subject if r.quiz else "DELETED_MODULE" }}
-                        </td>
+<div class="container">
 
-                        <td class="score-glow">{{ r.score }}</td> 
-                        
-                        <td class="small text-white-50">
-                            {{ r.taken_at.strftime("%d-%m-%Y %H:%M") }}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <div class="header">
+
+        {% if current and current.quiz %}
+
+            <h1>
+                Quiz Result
+            </h1>
+
+            <div class="header-subtitle">
+
+                <strong>
+                    {{ current.quiz.subject|default("Quiz") }}
+                </strong>
+
+                {% if current.quiz.chapter %}
+                    - {{ current.quiz.chapter }}
+                {% endif %}
+
+            </div>
+
         {% else %}
-            <p class="text-center py-5 text-muted">ZERO_RECORDS_DETECTED</p>
+
+            <h1>
+                Quiz Results
+            </h1>
+
+            <div class="header-subtitle">
+                Detailed quiz performance
+            </div>
+
         {% endif %}
 
-        <div class="mt-4">
-            <a href="{% if role == 'staff' %}{{ url_for('staff_dashboard') }}{% else %}{{ url_for('student_dashboard') }}{% endif %}"
-               class="btn btn-outline-info btn-sm">← RETURN_TO_DASHBOARD</a>
+
+        <div class="header-actions">
+
+            <!-- Direct URL: no Flask endpoint dependency -->
+
+            <a
+                href="/student"
+                class="btn btn-primary">
+
+                🏠 Back to Dashboard
+
+            </a>
+
+
+            {% if current and current.quiz %}
+
+                <!-- Direct URL: no url_for dependency -->
+
+                <a
+                    href="/start_quiz/{{ current.quiz.id }}"
+                    class="btn btn-secondary">
+
+                    🔄 Retry Quiz
+
+                </a>
+
+            {% endif %}
+
+
+            <button
+                type="button"
+                class="btn btn-secondary"
+                onclick="window.print()">
+
+                🖨️ Print / PDF
+
+            </button>
+
         </div>
+
     </div>
+
+
+
+    <!-- =====================================================
+         CURRENT RESULT
+         ===================================================== -->
+
+    {% if current %}
+
+
+        <!-- =================================================
+             SAFE JAVASCRIPT DATA
+             ================================================= -->
+
+        <div
+            id="chartData"
+
+            data-correct="{{ current.correct|default(0)|int }}"
+
+            data-incorrect="{{ current.incorrect|default(0)|int }}"
+
+            data-unanswered="{{ current.unanswered|default(0)|int }}"
+
+            data-percentage="{{ current.percentage|default(0)|float }}"
+
+            data-accuracy="{{ current.accuracy|default(0)|float }}">
+
+        </div>
+
+
+
+        <!-- =================================================
+             SUMMARY
+             ================================================= -->
+
+        <div class="summary-grid">
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    🏆
+                </div>
+
+                <div class="summary-title">
+                    Score
+                </div>
+
+                <div class="summary-value">
+
+                    {{ current.score|default(0) }}
+
+                    /
+
+                    {{ current.total|default(0) }}
+
+                </div>
+
+            </div>
+
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    📊
+                </div>
+
+                <div class="summary-title">
+                    Percentage
+                </div>
+
+                <div class="summary-value">
+
+                    {{ current.percentage|default(0)|round(1) }}%
+
+                </div>
+
+            </div>
+
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    ✅
+                </div>
+
+                <div class="summary-title">
+                    Correct
+                </div>
+
+                <div class="summary-value">
+
+                    {{ current.correct|default(0) }}
+
+                </div>
+
+            </div>
+
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    ❌
+                </div>
+
+                <div class="summary-title">
+                    Incorrect
+                </div>
+
+                <div class="summary-value">
+
+                    {{ current.incorrect|default(0) }}
+
+                </div>
+
+            </div>
+
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    ⚪
+                </div>
+
+                <div class="summary-title">
+                    Unanswered
+                </div>
+
+                <div class="summary-value">
+
+                    {{ current.unanswered|default(0) }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             CHART + RECOMMENDATION
+             ================================================= -->
+
+        <div class="main-grid">
+
+
+            <!-- CHART -->
+
+            <div class="card">
+
+                <div class="card-title">
+
+                    <h2>
+                        Answer Analysis
+                    </h2>
+
+                    <p>
+                        Correct, incorrect and unanswered questions
+                    </p>
+
+                </div>
+
+
+                <div class="chart-container">
+
+                    <canvas id="resultChart"></canvas>
+
+                </div>
+
+
+                <div class="performance-box">
+
+                    <div class="performance-header">
+
+                        <span>
+                            Overall Performance
+                        </span>
+
+                        <span id="performancePercentage">
+                            0%
+                        </span>
+
+                    </div>
+
+
+                    <div class="large-progress">
+
+                        <div
+                            id="performanceBar"
+                            class="large-progress-bar">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- RECOMMENDATION -->
+
+            <div class="card recommendation">
+
+                <div class="card-title">
+
+                    <h2>
+                        Performance Recommendation
+                    </h2>
+
+                    <p>
+                        Suggested next steps
+                    </p>
+
+                </div>
+
+
+                {% if current.recommendation %}
+
+
+                    {% if current.recommendation.level %}
+
+                        <div class="recommendation-level">
+
+                            {{ current.recommendation.level }}
+
+                        </div>
+
+                    {% endif %}
+
+
+                    {% if current.recommendation.message %}
+
+                        <p class="recommendation-message">
+
+                            {{ current.recommendation.message }}
+
+                        </p>
+
+                    {% endif %}
+
+
+                    {% if current.recommendation.steps %}
+
+                        <strong>
+                            Recommended Steps
+                        </strong>
+
+                        <ol class="steps">
+
+                            {% for step in current.recommendation.steps %}
+
+                                <li>
+                                    {{ step }}
+                                </li>
+
+                            {% endfor %}
+
+                        </ol>
+
+                    {% endif %}
+
+
+                    {% if current.recommendation.subject_tip %}
+
+                        <div class="tip-box">
+
+                            <strong>
+                                📚 Subject Tip
+                            </strong>
+
+                            <p>
+                                {{ current.recommendation.subject_tip }}
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    {% if current.recommendation.plan %}
+
+                        <div class="plan-box">
+
+                            <strong>
+                                🎯 Study Plan
+                            </strong>
+
+                            <p>
+                                {{ current.recommendation.plan }}
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+
+                {% else %}
+
+                    <p class="recommendation-message">
+
+                        Review your incorrect answers and continue
+                        practicing the topic.
+
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             DETAILED QUESTIONS
+             ================================================= -->
+
+        <div class="card question-section">
+
+
+            <div class="card-title">
+
+                <h2>
+                    📝 Detailed Question Review
+                </h2>
+
+                <p>
+                    Your answer compared with the correct answer
+                </p>
+
+            </div>
+
+
+
+            <!-- FILTERS -->
+
+            <div class="review-toolbar">
+
+                <div class="filter-buttons">
+
+
+                    <button
+                        type="button"
+                        class="filter-btn active"
+                        data-filter="all">
+
+                        All
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="filter-btn"
+                        data-filter="correct">
+
+                        ✅ Correct
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="filter-btn"
+                        data-filter="incorrect">
+
+                        ❌ Incorrect
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="filter-btn"
+                        data-filter="unanswered">
+
+                        ⚪ Unanswered
+
+                    </button>
+
+
+                </div>
+
+
+                <div
+                    id="questionCount"
+                    class="question-count">
+
+                    Showing all questions
+
+                </div>
+
+            </div>
+
+
+
+            <!-- QUESTIONS -->
+
+            {% if current.questions %}
+
+
+                {% for item in current.questions %}
+
+
+                    {% if item.is_correct %}
+
+                        <div
+                            class="question-card correct"
+                            data-status="correct">
+
+                    {% elif item.selected_text %}
+
+                        <div
+                            class="question-card incorrect"
+                            data-status="incorrect">
+
+                    {% else %}
+
+                        <div
+                            class="question-card unanswered"
+                            data-status="unanswered">
+
+                    {% endif %}
+
+
+                            <div class="question-top">
+
+                                <div>
+
+                                    <div class="question-number">
+
+                                        Question {{ loop.index }}
+
+                                    </div>
+
+
+                                    <div class="question-text">
+
+                                        {{ item.text|default("Question not available") }}
+
+                                    </div>
+
+                                </div>
+
+
+
+                                {% if item.is_correct %}
+
+                                    <span class="status correct">
+
+                                        CORRECT
+
+                                    </span>
+
+                                {% elif item.selected_text %}
+
+                                    <span class="status incorrect">
+
+                                        INCORRECT
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="status unanswered">
+
+                                        NOT ANSWERED
+
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+
+                            <div class="answer-grid">
+
+
+                                <!-- YOUR ANSWER -->
+
+                                {% if item.is_correct %}
+
+                                    <div class="answer-box your-correct">
+
+                                {% elif item.selected_text %}
+
+                                    <div class="answer-box your-wrong">
+
+                                {% else %}
+
+                                    <div class="answer-box">
+
+                                {% endif %}
+
+
+                                        <div class="answer-label">
+
+                                            Your Answer
+
+                                        </div>
+
+
+                                        <div class="answer-value">
+
+                                            {% if item.selected_text %}
+
+                                                {{ item.selected_text }}
+
+                                            {% else %}
+
+                                                <em>
+                                                    Not answered
+                                                </em>
+
+                                            {% endif %}
+
+                                        </div>
+
+                                    </div>
+
+
+
+                                <!-- CORRECT ANSWER -->
+
+                                <div class="answer-box correct-answer">
+
+                                    <div class="answer-label">
+
+                                        Correct Answer
+
+                                    </div>
+
+
+                                    <div class="answer-value">
+
+                                        {% if item.correct_text %}
+
+                                            {{ item.correct_text }}
+
+                                        {% else %}
+
+                                            <em>
+                                                Correct answer unavailable
+                                            </em>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                {% endfor %}
+
+
+            {% else %}
+
+
+                <div class="empty">
+
+                    <div class="empty-icon">
+                        📝
+                    </div>
+
+                    <h2>
+                        No Question Analysis
+                    </h2>
+
+                    <p>
+                        No detailed question information is available
+                        for this attempt.
+                    </p>
+
+                </div>
+
+
+            {% endif %}
+
+
+        </div>
+
+
+    {% else %}
+
+
+        <!-- =================================================
+             NO RESULT
+             ================================================= -->
+
+        <div class="empty">
+
+            <div class="empty-icon">
+                📊
+            </div>
+
+            <h2>
+                No Current Quiz Result
+            </h2>
+
+            <p>
+                Complete a quiz first to see your detailed result.
+            </p>
+
+            <br>
+
+            <a
+                href="/student"
+                class="btn btn-dark">
+
+                🏠 Back to Dashboard
+
+            </a>
+
+        </div>
+
+
+    {% endif %}
+
+
+
+    <!-- =====================================================
+         SUBJECT PERFORMANCE
+         ===================================================== -->
+
+    {% if subject_stats %}
+
+
+        <div class="card subject-section">
+
+            <div class="card-title">
+
+                <h2>
+                    📚 Subject Performance
+                </h2>
+
+                <p>
+                    Your performance across subjects
+                </p>
+
+            </div>
+
+
+            <div class="subject-list">
+
+
+                {% for subject in subject_stats %}
+
+
+                    <div class="subject-item">
+
+
+                        <div class="subject-header">
+
+                            <span>
+                                {{ subject.subject|default("Unknown") }}
+                            </span>
+
+                            <span>
+                                {{ subject.percentage|default(0)|round(1) }}%
+                            </span>
+
+                        </div>
+
+
+                        <div class="progress">
+
+                            <div
+                                class="progress-bar"
+                                data-percentage="{{ subject.percentage|default(0)|float }}">
+                            </div>
+
+                        </div>
+
+
+                        <div class="subject-meta">
+
+                            Correct:
+                            {{ subject.correct|default(0) }}
+
+                            /
+
+                            {{ subject.total|default(0) }}
+
+                            &nbsp;&nbsp;|&nbsp;&nbsp;
+
+                            Attempts:
+                            {{ subject.attempts|default(0) }}
+
+                        </div>
+
+
+                    </div>
+
+
+                {% endfor %}
+
+
+            </div>
+
+        </div>
+
+
+    {% endif %}
+
+
+
+    <!-- =====================================================
+         QUIZ HISTORY
+         ===================================================== -->
+
+    {% if results %}
+
+
+        <div class="card history-section">
+
+            <div class="card-title">
+
+                <h2>
+                    📈 Quiz History
+                </h2>
+
+                <p>
+                    Previous quiz attempts
+                </p>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                Subject
+                            </th>
+
+                            <th>
+                                Chapter
+                            </th>
+
+                            <th>
+                                Score
+                            </th>
+
+                            <th>
+                                Percentage
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        {% for result in results %}
+
+
+                            <tr>
+
+                                <td>
+                                    {{ loop.index }}
+                                </td>
+
+                                <td>
+                                    {{ result.subject|default("N/A") }}
+                                </td>
+
+                                <td>
+                                    {{ result.chapter|default("N/A") }}
+                                </td>
+
+                                <td>
+
+                                    {{ result.score|default(0) }}
+
+                                    /
+
+                                    {{ result.total|default(0) }}
+
+                                </td>
+
+                                <td>
+
+                                    {{ result.percentage|default(0)|round(1) }}%
+
+                                </td>
+
+                                <td>
+
+                                    {% if result.taken_at %}
+
+                                        {{ result.taken_at.strftime(
+                                            "%d-%m-%Y %I:%M %p"
+                                        ) }}
+
+                                    {% else %}
+
+                                        N/A
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+    {% endif %}
+
+
 </div>
+
+
+
+<!-- =========================================================
+     BACK TO TOP
+     ========================================================= -->
+
+<button
+    type="button"
+    id="backTop"
+    class="back-top"
+    aria-label="Back to top">
+
+    ↑
+
+</button>
+
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        /* =====================================================
+           READ RESULT DATA SAFELY
+           ===================================================== */
+
+        const dataElement =
+            document.getElementById("chartData");
+
+
+        if (dataElement) {
+
+
+            const correct =
+                parseInt(
+                    dataElement.getAttribute(
+                        "data-correct"
+                    ),
+                    10
+                ) || 0;
+
+
+            const incorrect =
+                parseInt(
+                    dataElement.getAttribute(
+                        "data-incorrect"
+                    ),
+                    10
+                ) || 0;
+
+
+            const unanswered =
+                parseInt(
+                    dataElement.getAttribute(
+                        "data-unanswered"
+                    ),
+                    10
+                ) || 0;
+
+
+            const percentage =
+                parseFloat(
+                    dataElement.getAttribute(
+                        "data-percentage"
+                    )
+                ) || 0;
+
+
+
+            /* =================================================
+               PERFORMANCE
+               ================================================= */
+
+            const safePercentage =
+                Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        percentage
+                    )
+                );
+
+
+            const performanceBar =
+                document.getElementById(
+                    "performanceBar"
+                );
+
+
+            const performanceText =
+                document.getElementById(
+                    "performancePercentage"
+                );
+
+
+            if (performanceBar) {
+
+                setTimeout(
+                    function () {
+
+                        performanceBar.style.width =
+                            safePercentage + "%";
+
+                    },
+                    200
+                );
+
+            }
+
+
+            if (performanceText) {
+
+                performanceText.textContent =
+                    safePercentage.toFixed(1) + "%";
+
+            }
+
+
+
+            /* =================================================
+               CHART
+               ================================================= */
+
+            const chartCanvas =
+                document.getElementById(
+                    "resultChart"
+                );
+
+
+            if (
+                chartCanvas &&
+                typeof Chart !== "undefined"
+            ) {
+
+
+                new Chart(
+                    chartCanvas,
+                    {
+                        type: "doughnut",
+
+                        data: {
+
+                            labels: [
+                                "Correct",
+                                "Incorrect",
+                                "Unanswered"
+                            ],
+
+                            datasets: [
+                                {
+                                    data: [
+                                        correct,
+                                        incorrect,
+                                        unanswered
+                                    ],
+
+                                    borderWidth: 2
+                                }
+                            ]
+
+                        },
+
+                        options: {
+
+                            responsive: true,
+
+                            maintainAspectRatio: false,
+
+                            cutout: "65%",
+
+                            plugins: {
+
+                                legend: {
+
+                                    position: "bottom",
+
+                                    labels: {
+
+                                        padding: 18,
+
+                                        usePointStyle: true
+
+                                    }
+
+                                },
+
+                                tooltip: {
+
+                                    callbacks: {
+
+                                        label:
+                                            function (context) {
+
+                                                return (
+                                                    context.label +
+                                                    ": " +
+                                                    context.raw
+                                                );
+
+                                            }
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+                );
+
+            }
+
+        }
+
+
+
+        /* =====================================================
+           SUBJECT PROGRESS BARS
+           ===================================================== */
+
+        const progressBars =
+            document.querySelectorAll(
+                ".progress-bar"
+            );
+
+
+        progressBars.forEach(
+            function (bar) {
+
+
+                let value =
+                    parseFloat(
+                        bar.getAttribute(
+                            "data-percentage"
+                        )
+                    );
+
+
+                if (isNaN(value)) {
+                    value = 0;
+                }
+
+
+                value =
+                    Math.max(
+                        0,
+                        Math.min(
+                            100,
+                            value
+                        )
+                    );
+
+
+                setTimeout(
+                    function () {
+
+                        bar.style.width =
+                            value + "%";
+
+                    },
+                    200
+                );
+
+            }
+        );
+
+
+
+        /* =====================================================
+           QUESTION FILTER
+           ===================================================== */
+
+        const filterButtons =
+            document.querySelectorAll(
+                ".filter-btn"
+            );
+
+
+        const questionCards =
+            document.querySelectorAll(
+                ".question-card"
+            );
+
+
+        const questionCount =
+            document.getElementById(
+                "questionCount"
+            );
+
+
+        filterButtons.forEach(
+            function (button) {
+
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+
+                        filterButtons.forEach(
+                            function (item) {
+
+                                item.classList.remove(
+                                    "active"
+                                );
+
+                            }
+                        );
+
+
+                        button.classList.add(
+                            "active"
+                        );
+
+
+                        const selectedFilter =
+                            button.getAttribute(
+                                "data-filter"
+                            );
+
+
+                        let visibleCount = 0;
+
+
+                        questionCards.forEach(
+                            function (card) {
+
+
+                                const status =
+                                    card.getAttribute(
+                                        "data-status"
+                                    );
+
+
+                                if (
+                                    selectedFilter === "all" ||
+                                    status === selectedFilter
+                                ) {
+
+                                    card.classList.remove(
+                                        "hidden"
+                                    );
+
+                                    visibleCount++;
+
+                                } else {
+
+                                    card.classList.add(
+                                        "hidden"
+                                    );
+
+                                }
+
+                            }
+                        );
+
+
+                        if (questionCount) {
+
+                            questionCount.textContent =
+                                "Showing " +
+                                visibleCount +
+                                " question" +
+                                (
+                                    visibleCount === 1
+                                        ? ""
+                                        : "s"
+                                );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+
+        /* =====================================================
+           BACK TO TOP
+           ===================================================== */
+
+        const backTop =
+            document.getElementById(
+                "backTop"
+            );
+
+
+        window.addEventListener(
+            "scroll",
+            function () {
+
+
+                if (!backTop) {
+                    return;
+                }
+
+
+                if (window.scrollY > 400) {
+
+                    backTop.classList.add(
+                        "show"
+                    );
+
+                } else {
+
+                    backTop.classList.remove(
+                        "show"
+                    );
+
+                }
+
+            }
+        );
+
+
+        if (backTop) {
+
+            backTop.addEventListener(
+                "click",
+                function () {
+
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth"
+                    });
+
+                }
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+
 </body>
 </html>
