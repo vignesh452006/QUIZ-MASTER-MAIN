@@ -324,44 +324,443 @@ def staff_dashboard():
                            username=session.get("username"))
 
 
+def calculate_quiz_result(quiz, form_data):
+    """
+    Calculate complete quiz result.
+
+    Supports both answer formats:
+        question.id
+        q{question.id}
+
+    Example:
+        5 = 12
+        OR
+        q5 = 12
+    """
+
+    correct = 0
+    incorrect = 0
+    unanswered = 0
+
+    question_analysis = []
+
+    questions = quiz.questions
+
+    for question in questions:
+
+        # -----------------------------------------
+        # SUPPORT BOTH FORM FORMATS
+        # -----------------------------------------
+
+        selected_value = form_data.get(
+            str(question.id)
+        )
+
+        if selected_value is None:
+            selected_value = form_data.get(
+                f"q{question.id}"
+            )
+
+        # -----------------------------------------
+        # FIND CORRECT OPTION
+        # -----------------------------------------
+
+        correct_option = next(
+            (
+                option
+                for option in question.options
+                if bool(option.is_correct)
+            ),
+            None
+        )
+
+        # -----------------------------------------
+        # UNANSWERED
+        # -----------------------------------------
+
+        if not selected_value:
+
+            unanswered += 1
+
+            question_analysis.append({
+                "id": question.id,
+                "text": question.text,
+                "selected_text": None,
+                "correct_text": (
+                    correct_option.text
+                    if correct_option
+                    else "Correct answer not available"
+                ),
+                "is_correct": False,
+                "status": "unanswered"
+            })
+
+            continue
+
+        # -----------------------------------------
+        # CONVERT SELECTED OPTION ID
+        # -----------------------------------------
+
+        try:
+            selected_option_id = int(selected_value)
+
+        except (ValueError, TypeError):
+
+            unanswered += 1
+
+            question_analysis.append({
+                "id": question.id,
+                "text": question.text,
+                "selected_text": None,
+                "correct_text": (
+                    correct_option.text
+                    if correct_option
+                    else "Correct answer not available"
+                ),
+                "is_correct": False,
+                "status": "unanswered"
+            })
+
+            continue
+
+        # -----------------------------------------
+        # FIND SELECTED OPTION
+        # -----------------------------------------
+
+        selected_option = next(
+            (
+                option
+                for option in question.options
+                if option.id == selected_option_id
+            ),
+            None
+        )
+
+        # -----------------------------------------
+        # INVALID OPTION
+        # -----------------------------------------
+
+        if selected_option is None:
+
+            unanswered += 1
+
+            question_analysis.append({
+                "id": question.id,
+                "text": question.text,
+                "selected_text": None,
+                "correct_text": (
+                    correct_option.text
+                    if correct_option
+                    else "Correct answer not available"
+                ),
+                "is_correct": False,
+                "status": "unanswered"
+            })
+
+            continue
+
+        # -----------------------------------------
+        # CHECK ANSWER
+        # -----------------------------------------
+
+        is_correct = bool(selected_option.is_correct)
+
+        if is_correct:
+            correct += 1
+            status = "correct"
+        else:
+            incorrect += 1
+            status = "incorrect"
+
+        question_analysis.append({
+            "id": question.id,
+            "text": question.text,
+
+            "selected_text": selected_option.text,
+
+            "correct_text": (
+                correct_option.text
+                if correct_option
+                else "Correct answer not available"
+            ),
+
+            "is_correct": is_correct,
+
+            "status": status
+        })
+
+    # -----------------------------------------
+    # TOTAL
+    # -----------------------------------------
+
+    total = len(questions)
+
+    # -----------------------------------------
+    # SCORE
+    # -----------------------------------------
+
+    score = correct
+
+    # -----------------------------------------
+    # PERCENTAGE
+    # -----------------------------------------
+
+    if total > 0:
+        percentage = (score / total) * 100
+    else:
+        percentage = 0
+
+    # -----------------------------------------
+    # ATTEMPTED
+    # -----------------------------------------
+
+    attempted = correct + incorrect
+
+    # -----------------------------------------
+    # ACCURACY
+    # -----------------------------------------
+
+    if attempted > 0:
+        accuracy = (correct / attempted) * 100
+    else:
+        accuracy = 0
+
+    # -----------------------------------------
+    # RECOMMENDATION
+    # -----------------------------------------
+
+    if percentage >= 80:
+
+        recommendation = {
+            "level": "Excellent Performance",
+
+            "message": (
+                "Great work! You have demonstrated "
+                "a strong understanding of this quiz."
+            ),
+
+            "steps": [
+                "Continue practicing regularly.",
+                "Try more advanced questions.",
+                "Review difficult questions to strengthen your knowledge."
+            ],
+
+            "subject_tip": (
+                f"Keep strengthening your "
+                f"{quiz.subject} concepts."
+            ),
+
+            "plan": (
+                "Practice a few questions every day "
+                "and attempt another quiz to maintain "
+                "your performance."
+            )
+        }
+
+    elif percentage >= 60:
+
+        recommendation = {
+            "level": "Good Performance",
+
+            "message": (
+                "Good job! You have a reasonable "
+                "understanding of the topic, with some "
+                "areas that can be improved."
+            ),
+
+            "steps": [
+                "Review the questions you answered incorrectly.",
+                "Practice similar questions.",
+                "Revise important concepts before your next attempt."
+            ],
+
+            "subject_tip": (
+                f"Focus on the concepts where you "
+                f"made mistakes in {quiz.subject}."
+            ),
+
+            "plan": (
+                "Spend 20–30 minutes revising the topic "
+                "and then attempt another quiz."
+            )
+        }
+
+    elif percentage >= 40:
+
+        recommendation = {
+            "level": "Needs Improvement",
+
+            "message": (
+                "You have made some progress, but "
+                "additional practice is recommended."
+            ),
+
+            "steps": [
+                "Review all incorrect questions.",
+                "Revise the basic concepts.",
+                "Practice more questions before retrying."
+            ],
+
+            "subject_tip": (
+                f"Concentrate on the fundamental "
+                f"concepts of {quiz.subject}."
+            ),
+
+            "plan": (
+                "Create a short revision plan and "
+                "practice questions daily."
+            )
+        }
+
+    else:
+
+        recommendation = {
+            "level": "Strong Revision Recommended",
+
+            "message": (
+                "Use this attempt as a learning opportunity. "
+                "Review the basic concepts before attempting "
+                "the quiz again."
+            ),
+
+            "steps": [
+                "Study the basic concepts again.",
+                "Review every incorrect question.",
+                "Practice simple questions first.",
+                "Retry the quiz after revision."
+            ],
+
+            "subject_tip": (
+                f"Start with the fundamentals of "
+                f"{quiz.subject} before moving to advanced questions."
+            ),
+
+            "plan": (
+                "Revise the topic step by step and "
+                "practice questions regularly."
+            )
+        }
+
+    return {
+        "quiz_id": quiz.id,
+
+        "subject": quiz.subject,
+
+        "chapter": quiz.chapter,
+
+        "score": score,
+
+        "total": total,
+
+        "percentage": percentage,
+
+        "correct": correct,
+
+        "incorrect": incorrect,
+
+        "unanswered": unanswered,
+
+        "accuracy": accuracy,
+
+        "questions": question_analysis,
+
+        "recommendation": recommendation
+    }
 
 
 
 
+# ============================================================
+# START QUIZ
+# ============================================================
 
 @app.route("/start_quiz/<int:quiz_id>", methods=["GET", "POST"])
 def start_quiz(quiz_id):
-    if session.get("role") != "student":
+
+    # -----------------------------------------
+    # LOGIN CHECK
+    # -----------------------------------------
+
+    if "user_id" not in session:
         return redirect(url_for("login"))
 
-    quiz = Quiz.query.get_or_404(quiz_id)
-    questions = Question.query.filter_by(quiz_id=quiz.id).all()
+    # -----------------------------------------
+    # GET QUIZ
+    # -----------------------------------------
 
-    if request.method == "POST":
-        score = 0
-        for q in questions:
-            selected = request.form.get(str(q.id))
-            if selected:
-                opt = Option.query.get(int(selected))
-                if opt and opt.is_correct:
-                    score += 1
+    quiz = Quiz.query.get_or_404(quiz_id)
+
+    # -----------------------------------------
+    # GET REQUEST
+    # SHOW QUIZ
+    # -----------------------------------------
+
+    if request.method == "GET":
+
+        return render_template(
+            "start_quiz.html",
+            quiz=quiz,
+            questions=quiz.questions
+        )
+
+    # -----------------------------------------
+    # POST REQUEST
+    # SUBMIT QUIZ
+    # -----------------------------------------
+
+    try:
+
+        # Calculate complete result
+        result_data = calculate_quiz_result(
+            quiz,
+            request.form
+        )
+
+        # -----------------------------------------
+        # SAVE SCORE TO DATABASE
+        # -----------------------------------------
 
         result = StudentResult(
             student_id=session["user_id"],
             quiz_id=quiz.id,
-            score=score,
+            score=result_data["score"],
             taken_at=datetime.utcnow()
         )
+
         db.session.add(result)
         db.session.commit()
 
-        flash("Quiz submitted successfully!", "success")
+        # -----------------------------------------
+        # SAVE DETAILED RESULT IN SESSION
+        # -----------------------------------------
+
+        session["last_quiz_result"] = result_data
+
+        session.modified = True
+
+        # -----------------------------------------
+        # GO TO RESULT PAGE
+        # -----------------------------------------
+
         return redirect(url_for("view_results"))
 
-    return render_template("start_quiz.html",
-                           quiz=quiz,
-                           questions=questions)
+    except Exception as e:
 
+        db.session.rollback()
+
+        print("QUIZ SUBMISSION ERROR:", e)
+
+        flash(
+            "Unable to submit quiz. Please try again.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "start_quiz",
+                quiz_id=quiz.id
+            )
+        )
 @app.route("/student")
 def student_dashboard():
     if session.get("role") != "student":
@@ -623,46 +1022,139 @@ def delete_question(question_id):
 
 @app.route("/attempt_quiz", methods=["GET", "POST"])
 def attempt_quiz():
+
+    # -----------------------------------------
+    # STUDENT LOGIN CHECK
+    # -----------------------------------------
+
     if session.get("role") != "student":
         return redirect(url_for("login"))
 
-    # Load all quizzes for dropdown
-    quizzes = Quiz.query.all()
+    # -----------------------------------------
+    # GET ALL QUIZZES
+    # -----------------------------------------
+
+    quizzes = (
+        Quiz.query
+        .order_by(Quiz.created_at.desc())
+        .all()
+    )
+
     quiz = None
 
-    # ---------------- LOAD QUIZ (GET) ----------------
+    # -----------------------------------------
+    # GET SELECTED QUIZ
+    # -----------------------------------------
+
     quiz_id = request.args.get("quiz_id")
+
     if quiz_id:
-        quiz = Quiz.query.get_or_404(int(quiz_id))
 
-    # ---------------- SUBMIT QUIZ (POST) ----------------
+        try:
+            quiz_id = int(quiz_id)
+
+            quiz = Quiz.query.get_or_404(
+                quiz_id
+            )
+
+        except (ValueError, TypeError):
+
+            flash(
+                "Invalid quiz ID.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("attempt_quiz")
+            )
+
+    # -----------------------------------------
+    # POST - SUBMIT QUIZ
+    # -----------------------------------------
+
     if request.method == "POST":
-        quiz_id = int(request.form.get("quiz_id"))
-        quiz = Quiz.query.get_or_404(quiz_id)
 
-        score = 0
-        total = len(quiz.questions)
+        try:
 
-        for q in quiz.questions:
-            selected_opt_id = request.form.get(f"q{q.id}")
-            if selected_opt_id:
-                opt = Option.query.get(int(selected_opt_id))
-                if opt and opt.is_correct:
-                    score += 1
+            quiz_id = request.form.get("quiz_id")
 
-        # ✅ Save result
-        result = StudentResult(
-            student_id=session.get("user_id"),
-            quiz_id=quiz.id,
-            score=score
-        )
-        db.session.add(result)
-        db.session.commit()
+            if not quiz_id:
 
-        flash(f"Quiz submitted! Your score: {score} / {total}", "success")
-        return redirect(url_for("view_results"))
+                flash(
+                    "Quiz ID is missing.",
+                    "danger"
+                )
 
-    # ---------------- RENDER PAGE ----------------
+                return redirect(
+                    url_for("attempt_quiz")
+                )
+
+            quiz = Quiz.query.get_or_404(
+                int(quiz_id)
+            )
+
+            # ---------------------------------
+            # CALCULATE COMPLETE RESULT
+            # ---------------------------------
+
+            result_data = calculate_quiz_result(
+                quiz,
+                request.form
+            )
+
+            # ---------------------------------
+            # SAVE DATABASE RESULT
+            # ---------------------------------
+
+            result = StudentResult(
+                student_id=session["user_id"],
+                quiz_id=quiz.id,
+                score=result_data["score"],
+                taken_at=datetime.utcnow()
+            )
+
+            db.session.add(result)
+
+            db.session.commit()
+
+            # ---------------------------------
+            # SAVE DETAILED RESULT
+            # ---------------------------------
+
+            session["last_quiz_result"] = result_data
+
+            session.modified = True
+
+            # ---------------------------------
+            # REDIRECT
+            # ---------------------------------
+
+            return redirect(
+                url_for("view_results")
+            )
+
+        except Exception as e:
+
+            db.session.rollback()
+
+            print(
+                "ATTEMPT QUIZ ERROR:",
+                e
+            )
+
+            flash(
+                "Unable to submit quiz.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("attempt_quiz")
+            )
+
+    # -----------------------------------------
+    # SHOW ATTEMPT QUIZ PAGE
+    # -----------------------------------------
+
     return render_template(
         "attempt_quiz.html",
         quizzes=quizzes,
@@ -672,27 +1164,245 @@ def attempt_quiz():
 
 @app.route("/view_results")
 def view_results():
-    if not session.get("user_id"):
+
+    # -----------------------------------------
+    # LOGIN CHECK
+    # -----------------------------------------
+
+    if "user_id" not in session:
         return redirect(url_for("login"))
 
-    role = session.get("role")
-    user_id = session.get("user_id")
+    # -----------------------------------------
+    # GET LAST QUIZ RESULT
+    # -----------------------------------------
 
-    if role == "student":
-        # We filter by student_id and order by date
-        results = StudentResult.query.filter_by(student_id=user_id)\
-                                     .order_by(StudentResult.taken_at.desc()).all()
-    elif role == "staff":
-        # Staff see everything
-        results = StudentResult.query.order_by(StudentResult.taken_at.desc()).all()
+    stored_result = session.get(
+        "last_quiz_result"
+    )
+
+    current = None
+
+    if stored_result:
+
+        current = dict(stored_result)
+
+        # -------------------------------------
+        # GET QUIZ AGAIN FROM DATABASE
+        # -------------------------------------
+
+        quiz_id = current.get("quiz_id")
+
+        if quiz_id:
+
+            quiz = Quiz.query.get(
+                quiz_id
+            )
+
+            if quiz:
+
+                current["quiz"] = quiz
+
+                # Always calculate total
+                current["total"] = len(
+                    quiz.questions
+                )
+
+                # Recalculate percentage
+                if current["total"] > 0:
+
+                    current["percentage"] = round(
+                        (
+                            current["score"] /
+                            current["total"]
+                        ) * 100,
+                        2
+                    )
+
+                else:
+
+                    current["percentage"] = 0
+
+    # -----------------------------------------
+    # ROLE
+    # -----------------------------------------
+
+    role = session.get(
+        "role",
+        "student"
+    )
+
+    # -----------------------------------------
+    # GET HISTORY
+    # -----------------------------------------
+
+    if role == "staff":
+
+        db_results = (
+            StudentResult.query
+            .order_by(
+                StudentResult.taken_at.desc()
+            )
+            .all()
+        )
+
     else:
-        return redirect(url_for("login"))
 
-    return render_template("view_results.html", 
-                           results=results, 
-                           role=role)
+        db_results = (
+            StudentResult.query
+            .filter_by(
+                student_id=session["user_id"]
+            )
+            .order_by(
+                StudentResult.taken_at.desc()
+            )
+            .all()
+        )
 
+    # -----------------------------------------
+    # RESULT HISTORY
+    # -----------------------------------------
 
+    results = []
+
+    for result in db_results:
+
+        quiz = result.quiz
+
+        if quiz is None:
+            continue
+
+        total = len(
+            quiz.questions
+        )
+
+        if total > 0:
+
+            percentage = (
+                result.score /
+                total
+            ) * 100
+
+        else:
+
+            percentage = 0
+
+        results.append({
+
+            "id": result.id,
+
+            "subject": quiz.subject,
+
+            "chapter": quiz.chapter,
+
+            "score": result.score,
+
+            "total": total,
+
+            "percentage": round(
+                percentage,
+                2
+            ),
+
+            "taken_at": result.taken_at
+
+        })
+
+    # -----------------------------------------
+    # SUBJECT PERFORMANCE
+    # -----------------------------------------
+
+    subject_data = {}
+
+    for result in db_results:
+
+        quiz = result.quiz
+
+        if quiz is None:
+            continue
+
+        subject = quiz.subject
+
+        total = len(
+            quiz.questions
+        )
+
+        if subject not in subject_data:
+
+            subject_data[subject] = {
+
+                "subject": subject,
+
+                "correct": 0,
+
+                "total": 0,
+
+                "attempts": 0
+
+            }
+
+        subject_data[
+            subject
+        ]["correct"] += result.score
+
+        subject_data[
+            subject
+        ]["total"] += total
+
+        subject_data[
+            subject
+        ]["attempts"] += 1
+
+    # -----------------------------------------
+    # BUILD SUBJECT STATS
+    # -----------------------------------------
+
+    subject_stats = []
+
+    for subject, data in subject_data.items():
+
+        if data["total"] > 0:
+
+            percentage = (
+                data["correct"] /
+                data["total"]
+            ) * 100
+
+        else:
+
+            percentage = 0
+
+        subject_stats.append({
+
+            "subject": data["subject"],
+
+            "correct": data["correct"],
+
+            "total": data["total"],
+
+            "attempts": data["attempts"],
+
+            "percentage": round(
+                percentage,
+                2
+            )
+
+        })
+
+    # -----------------------------------------
+    # RENDER RESULT PAGE
+    # -----------------------------------------
+
+    return render_template(
+        "view_results.html",
+
+        current=current,
+
+        results=results,
+
+        subject_stats=subject_stats,
+
+        role=role
+    )
 # ---------- SETTINGS / MANAGE STUDENTS ----------
 @app.route("/settings")
 def settings():
