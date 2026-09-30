@@ -1162,235 +1162,424 @@ def attempt_quiz():
     )
 
 
+# ============================================================
+# VIEW RESULTS
+# Accessible by STUDENT, STAFF and ADMIN
+# ============================================================
+
 @app.route("/view_results")
 def view_results():
 
-    # -----------------------------------------
+    # --------------------------------------------------------
     # LOGIN CHECK
-    # -----------------------------------------
+    # --------------------------------------------------------
 
-    if "user_id" not in session:
+    if not session.get("user_id"):
         return redirect(url_for("login"))
 
-    # -----------------------------------------
-    # GET LAST QUIZ RESULT
-    # -----------------------------------------
+    role = session.get("role")
+    logged_user_id = session.get("user_id")
 
-    stored_result = session.get(
-        "last_quiz_result"
-    )
+    # --------------------------------------------------------
+    # GET RESULT ID
+    # Example:
+    # /view_results?result_id=5
+    # --------------------------------------------------------
 
-    current = None
+    result_id = request.args.get("result_id", type=int)
 
-    if stored_result:
+    # --------------------------------------------------------
+    # GET RESULTS
+    # --------------------------------------------------------
 
-        current = dict(stored_result)
+    if role == "student":
 
-        # -------------------------------------
-        # GET QUIZ AGAIN FROM DATABASE
-        # -------------------------------------
-
-        quiz_id = current.get("quiz_id")
-
-        if quiz_id:
-
-            quiz = Quiz.query.get(
-                quiz_id
-            )
-
-            if quiz:
-
-                current["quiz"] = quiz
-
-                # Always calculate total
-                current["total"] = len(
-                    quiz.questions
-                )
-
-                # Recalculate percentage
-                if current["total"] > 0:
-
-                    current["percentage"] = round(
-                        (
-                            current["score"] /
-                            current["total"]
-                        ) * 100,
-                        2
-                    )
-
-                else:
-
-                    current["percentage"] = 0
-
-    # -----------------------------------------
-    # ROLE
-    # -----------------------------------------
-
-    role = session.get(
-        "role",
-        "student"
-    )
-
-    # -----------------------------------------
-    # GET HISTORY
-    # -----------------------------------------
-
-    if role == "staff":
-
-        db_results = (
+        results = (
             StudentResult.query
-            .order_by(
-                StudentResult.taken_at.desc()
-            )
+            .filter_by(student_id=logged_user_id)
+            .order_by(StudentResult.taken_at.desc())
+            .all()
+        )
+
+    elif role in ["staff", "admin"]:
+
+        results = (
+            StudentResult.query
+            .order_by(StudentResult.taken_at.desc())
             .all()
         )
 
     else:
 
-        db_results = (
-            StudentResult.query
-            .filter_by(
-                student_id=session["user_id"]
-            )
-            .order_by(
-                StudentResult.taken_at.desc()
-            )
-            .all()
+        return redirect(url_for("login"))
+
+    # --------------------------------------------------------
+    # SELECT RESULT
+    # --------------------------------------------------------
+
+    selected_result = None
+
+    if result_id is not None:
+
+        for result in results:
+
+            if result.id == result_id:
+                selected_result = result
+                break
+
+    # --------------------------------------------------------
+    # DEFAULT TO LATEST RESULT
+    # --------------------------------------------------------
+
+    if selected_result is None and results:
+        selected_result = results[0]
+
+    # --------------------------------------------------------
+    # CURRENT RESULT
+    # --------------------------------------------------------
+
+    current = None
+
+    last_quiz_result = session.get("last_quiz_result")
+
+    # --------------------------------------------------------
+    # USE DETAILED SESSION RESULT
+    # --------------------------------------------------------
+
+    if last_quiz_result:
+
+        session_quiz_id = last_quiz_result.get("quiz_id")
+
+        selected_quiz_id = None
+
+        if selected_result:
+            selected_quiz_id = selected_result.quiz_id
+
+        if (
+            selected_quiz_id is None
+            or session_quiz_id == selected_quiz_id
+        ):
+
+            quiz = None
+
+            if session_quiz_id:
+                quiz = Quiz.query.get(session_quiz_id)
+
+            if quiz:
+
+                current = {
+                    "quiz_id": quiz.id,
+
+                    "subject": last_quiz_result.get(
+                        "subject",
+                        quiz.subject or "Unknown"
+                    ),
+
+                    "chapter": last_quiz_result.get(
+                        "chapter",
+                        quiz.chapter or "Unknown"
+                    ),
+
+                    "score": int(
+                        last_quiz_result.get(
+                            "score",
+                            0
+                        ) or 0
+                    ),
+
+                    "total": int(
+                        last_quiz_result.get(
+                            "total",
+                            len(quiz.questions)
+                        ) or 0
+                    ),
+
+                    "percentage": float(
+                        last_quiz_result.get(
+                            "percentage",
+                            0
+                        ) or 0
+                    ),
+
+                    "correct": int(
+                        last_quiz_result.get(
+                            "correct",
+                            0
+                        ) or 0
+                    ),
+
+                    "incorrect": int(
+                        last_quiz_result.get(
+                            "incorrect",
+                            0
+                        ) or 0
+                    ),
+
+                    "unanswered": int(
+                        last_quiz_result.get(
+                            "unanswered",
+                            0
+                        ) or 0
+                    ),
+
+                    "accuracy": float(
+                        last_quiz_result.get(
+                            "accuracy",
+                            0
+                        ) or 0
+                    ),
+
+                    "questions": last_quiz_result.get(
+                        "questions",
+                        []
+                    ),
+
+                    "recommendation": last_quiz_result.get(
+                        "recommendation",
+                        {}
+                    ),
+
+                    "quiz": quiz
+                }
+
+    # --------------------------------------------------------
+    # DATABASE FALLBACK
+    # --------------------------------------------------------
+
+    if current is None and selected_result:
+
+        quiz = Quiz.query.get(
+            selected_result.quiz_id
         )
 
-    # -----------------------------------------
-    # RESULT HISTORY
-    # -----------------------------------------
+        if quiz:
 
-    results = []
+            total = len(quiz.questions)
 
-    for result in db_results:
+            score = int(
+                selected_result.score or 0
+            )
 
-        quiz = result.quiz
+            if total > 0:
+                percentage = (
+                    score / total
+                ) * 100
+            else:
+                percentage = 0
 
-        if quiz is None:
+            current = {
+                "quiz_id": quiz.id,
+
+                "subject": quiz.subject or "Unknown",
+
+                "chapter": quiz.chapter or "Unknown",
+
+                "score": score,
+
+                "total": total,
+
+                "percentage": percentage,
+
+                "correct": score,
+
+                "incorrect": max(
+                    total - score,
+                    0
+                ),
+
+                "unanswered": 0,
+
+                "accuracy": percentage,
+
+                "questions": [],
+
+                "recommendation": {
+                    "level": "Result Available",
+
+                    "message":
+                        "Your quiz result is available. "
+                        "Review the quiz and continue practicing.",
+
+                    "steps": [
+                        "Review the quiz questions.",
+                        "Practice the topics where you made mistakes.",
+                        "Attempt another quiz to improve your score."
+                    ],
+
+                    "subject_tip":
+                        "Continue practicing "
+                        + str(quiz.subject or "this subject")
+                        + ".",
+
+                    "plan":
+                        "Review the topic and attempt another quiz."
+                },
+
+                "quiz": quiz
+            }
+
+    # --------------------------------------------------------
+    # SUBJECT PERFORMANCE
+    # --------------------------------------------------------
+
+    subject_data = {}
+
+    for result in results:
+
+        quiz = Quiz.query.get(
+            result.quiz_id
+        )
+
+        if not quiz:
             continue
+
+        subject = quiz.subject or "Unknown"
+
+        if subject not in subject_data:
+
+            subject_data[subject] = {
+                "subject": subject,
+                "correct": 0,
+                "total": 0,
+                "attempts": 0
+            }
+
+        score = int(
+            result.score or 0
+        )
 
         total = len(
             quiz.questions
+        )
+
+        subject_data[subject]["correct"] += score
+
+        subject_data[subject]["total"] += total
+
+        subject_data[subject]["attempts"] += 1
+
+    # --------------------------------------------------------
+    # CREATE SUBJECT STATS
+    # --------------------------------------------------------
+
+    subject_stats = []
+
+    for data in subject_data.values():
+
+        if data["total"] > 0:
+
+            percentage = (
+                data["correct"]
+                / data["total"]
+            ) * 100
+
+        else:
+
+            percentage = 0
+
+        # Safe percentage for progress bar
+        safe_percentage = max(
+            0,
+            min(
+                float(percentage),
+                100
+            )
+        )
+
+        data["percentage"] = percentage
+
+        data["safe_percentage"] = safe_percentage
+
+        subject_stats.append(data)
+
+    # --------------------------------------------------------
+    # QUIZ HISTORY
+    # --------------------------------------------------------
+
+    history = []
+
+    for result in results:
+
+        quiz = Quiz.query.get(
+            result.quiz_id
+        )
+
+        if not quiz:
+            continue
+
+        student = User.query.get(
+            result.student_id
+        )
+
+        if student:
+            student_name = student.username
+        else:
+            student_name = "Unknown Student"
+
+        total = len(
+            quiz.questions
+        )
+
+        score = int(
+            result.score or 0
         )
 
         if total > 0:
 
             percentage = (
-                result.score /
-                total
+                score / total
             ) * 100
 
         else:
 
             percentage = 0
 
-        results.append({
-
+        history.append({
             "id": result.id,
 
-            "subject": quiz.subject,
+            "student_id": result.student_id,
 
-            "chapter": quiz.chapter,
+            "student_name": student_name,
 
-            "score": result.score,
+            "quiz_id": quiz.id,
+
+            "subject": quiz.subject or "Unknown",
+
+            "chapter": quiz.chapter or "Unknown",
+
+            "score": score,
 
             "total": total,
 
-            "percentage": round(
-                percentage,
-                2
-            ),
+            "percentage": percentage,
 
             "taken_at": result.taken_at
-
         })
 
-    # -----------------------------------------
-    # SUBJECT PERFORMANCE
-    # -----------------------------------------
+    # --------------------------------------------------------
+    # CURRENT STUDENT NAME
+    # --------------------------------------------------------
 
-    subject_data = {}
+    current_student_name = session.get(
+        "username",
+        "User"
+    )
 
-    for result in db_results:
+    if selected_result:
 
-        quiz = result.quiz
-
-        if quiz is None:
-            continue
-
-        subject = quiz.subject
-
-        total = len(
-            quiz.questions
+        selected_student = User.query.get(
+            selected_result.student_id
         )
 
-        if subject not in subject_data:
+        if selected_student:
 
-            subject_data[subject] = {
-
-                "subject": subject,
-
-                "correct": 0,
-
-                "total": 0,
-
-                "attempts": 0
-
-            }
-
-        subject_data[
-            subject
-        ]["correct"] += result.score
-
-        subject_data[
-            subject
-        ]["total"] += total
-
-        subject_data[
-            subject
-        ]["attempts"] += 1
-
-    # -----------------------------------------
-    # BUILD SUBJECT STATS
-    # -----------------------------------------
-
-    subject_stats = []
-
-    for subject, data in subject_data.items():
-
-        if data["total"] > 0:
-
-            percentage = (
-                data["correct"] /
-                data["total"]
-            ) * 100
-
-        else:
-
-            percentage = 0
-
-        subject_stats.append({
-
-            "subject": data["subject"],
-
-            "correct": data["correct"],
-
-            "total": data["total"],
-
-            "attempts": data["attempts"],
-
-            "percentage": round(
-                percentage,
-                2
+            current_student_name = (
+                selected_student.username
             )
 
-        })
-
-    # -----------------------------------------
-    # RENDER RESULT PAGE
-    # -----------------------------------------
+    # --------------------------------------------------------
+    # RENDER TEMPLATE
+    # --------------------------------------------------------
 
     return render_template(
         "view_results.html",
@@ -1401,7 +1590,15 @@ def view_results():
 
         subject_stats=subject_stats,
 
-        role=role
+        history=history,
+
+        role=role,
+
+        username=session.get(
+            "username"
+        ),
+
+        current_student_name=current_student_name
     )
 # ---------- SETTINGS / MANAGE STUDENTS ----------
 @app.route("/settings")
@@ -1494,51 +1691,102 @@ def staff_search_students():
 
 
 
-@app.route("/summary")
-def summary():
-    if session.get("role") != "staff":
-        return redirect(url_for("login"))
-
-    total_students = UserRole.query.join(Role)\
-        .filter(Role.name == "student").count()
-
-    attempted = StudentResult.query.distinct(StudentResult.student_id).count()
-    not_attempted = max(total_students - attempted, 0)
-
-    results = StudentResult.query\
-        .order_by(StudentResult.taken_at.desc()).all()
-
-    return render_template(
-        "summary.html",
-        total_students=total_students,
-        attempted=attempted,
-        not_attempted=not_attempted,
-        results = results
-    )
 from sqlalchemy import func
+
+# ============================================================
+# STAFF SUMMARY
+# ============================================================
 
 @app.route("/student_summary")
 def student_summary():
+
+    # --------------------------------------------------------
+    # CHECK LOGIN
+    # --------------------------------------------------------
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    # --------------------------------------------------------
+    # STUDENT ONLY
+    # --------------------------------------------------------
+
     if session.get("role") != "student":
         return redirect(url_for("login"))
 
-    student_id = session.get("user_id")
+    # --------------------------------------------------------
+    # CURRENT STUDENT
+    # --------------------------------------------------------
 
-    # Total quizzes available
+    student_id = session.get("user_id")
+    username = session.get("username", "Student")
+
+    # --------------------------------------------------------
+    # TOTAL AVAILABLE QUIZZES
+    # --------------------------------------------------------
+
     total_quizzes = Quiz.query.count()
 
-    # Quizzes attempted by this student
-    attempted = StudentResult.query.filter_by(student_id=student_id).count()
+    # --------------------------------------------------------
+    # QUIZZES ATTEMPTED BY THIS STUDENT
+    #
+    # DISTINCT quiz_id is used so that multiple attempts
+    # of the same quiz count as ONE attempted quiz.
+    # --------------------------------------------------------
 
-    not_attempted = total_quizzes - attempted if total_quizzes >= attempted else 0
+    attempted = (
+        db.session
+        .query(
+            func.count(
+                func.distinct(
+                    StudentResult.quiz_id
+                )
+            )
+        )
+        .filter(
+            StudentResult.student_id == student_id
+        )
+        .scalar()
+    )
+
+    attempted = int(attempted or 0)
+
+    # --------------------------------------------------------
+    # QUIZZES NOT YET ATTEMPTED
+    # --------------------------------------------------------
+
+    not_attempted = max(
+        total_quizzes - attempted,
+        0
+    )
+
+    # --------------------------------------------------------
+    # STUDENT'S QUIZ RESULTS
+    # --------------------------------------------------------
+
+    results = (
+        StudentResult.query
+        .filter(
+            StudentResult.student_id == student_id
+        )
+        .order_by(
+            StudentResult.taken_at.desc()
+        )
+        .all()
+    )
+
+    # --------------------------------------------------------
+    # RENDER STUDENT SUMMARY
+    # --------------------------------------------------------
 
     return render_template(
         "student_summary.html",
+        username=username,
         attempted=attempted,
         not_attempted=not_attempted,
-        username=session.get("username")
+        total_quizzes=total_quizzes,
+        results=results
     )
-
 @app.route("/profile")
 def profile():
     if not session.get("user_id"):
