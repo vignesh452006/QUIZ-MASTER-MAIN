@@ -1603,11 +1603,20 @@ def view_results():
 # ---------- SETTINGS / MANAGE STUDENTS ----------
 @app.route("/settings")
 def settings():
-    if session.get("role") != "staff":
+    # Check whether user is logged in
+    if "user_id" not in session:
         return redirect(url_for("login"))
-    students = User.query.join(UserRole).join(Role)\
-        .filter(Role.name == "student").all()
-    return render_template("settings.html", students=students)
+
+    # Only students can access this page
+    if session.get("role") != "student":
+        return redirect(url_for("home"))
+
+    username = session.get("username", "Student")
+
+    return render_template(
+        "stu_config.html",
+        username=username
+    )
 
 # ---------- UPDATE STUDENT ----------
 @app.route("/update_student/<int:student_id>", methods=["POST"])
@@ -1896,11 +1905,22 @@ def save_quiz():
         flash(f"Error saving quiz: {str(e)}", "danger")
         return redirect(url_for('create_quiz'))
 
+from flask import render_template, redirect, url_for, session
+@app.route("/stu_config")
+def stu_config():
+    return render_template(
+        "stu_config.html",
+        username=session.get("username", "Student")
+    )
+@app.route("/something")
+def something():
+    # other code
+    return render_template("something.html")
 
 
-        
-import os
-
+@app.route("/test_config")
+def test_config():
+    return "TEST CONFIG ROUTE IS WORKING"
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(
