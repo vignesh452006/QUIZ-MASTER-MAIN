@@ -1,15 +1,16 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Quiz Results</title>
+    <title>Detailed Quiz Results</title>
 
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 
     <style>
-
         * {
             margin: 0;
             padding: 0;
@@ -22,1088 +23,809 @@
 
         body {
             font-family: Arial, Helvetica, sans-serif;
-            background: #f4f7fb;
-            color: #1f2937;
+            background:
+                radial-gradient(circle at top left, rgba(0, 153, 255, 0.18), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(0, 255, 255, 0.10), transparent 30%),
+                #020817;
+            color: #e8f7ff;
+            min-height: 100vh;
         }
 
-        a {
+        /* =========================
+           TOP NAVIGATION
+        ========================== */
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            padding: 16px 5%;
+            background: rgba(2, 8, 23, 0.92);
+            border-bottom: 1px solid rgba(0, 195, 255, 0.25);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            color: #00d9ff;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 1px;
             text-decoration: none;
         }
 
-        button {
-            font-family: inherit;
-        }
-
-        .container {
-            width: 92%;
-            max-width: 1250px;
-            margin: 30px auto 60px;
-        }
-
-        /* ================= HEADER ================= */
-
-        .header {
-            background: linear-gradient(
-                135deg,
-                #4f46e5,
-                #6366f1,
-                #7c3aed
-            );
-
-            color: white;
-
-            padding: 32px;
-
-            border-radius: 22px;
-
-            margin-bottom: 25px;
-
-            box-shadow:
-                0 15px 40px rgba(79, 70, 229, 0.25);
-        }
-
-        .header h1 {
-            font-size: 34px;
-            margin-bottom: 7px;
-        }
-
-        .header-subtitle {
-            opacity: 0.9;
-            font-size: 16px;
-        }
-
-        .header-actions {
+        .nav-actions {
             display: flex;
-            flex-wrap: wrap;
             gap: 10px;
-            margin-top: 22px;
+            flex-wrap: wrap;
         }
 
-        /* ================= BUTTONS ================= */
-
-        .btn {
-            display: inline-flex;
-
-            align-items: center;
-            justify-content: center;
-
-            gap: 7px;
-
-            padding: 11px 17px;
-
-            border-radius: 10px;
-
-            border: none;
-
-            cursor: pointer;
-
+        .nav-btn {
+            text-decoration: none;
+            color: #dff8ff;
+            border: 1px solid rgba(0, 217, 255, 0.35);
+            background: rgba(0, 140, 255, 0.08);
+            padding: 9px 16px;
+            border-radius: 8px;
+            transition: 0.3s ease;
             font-size: 14px;
-
-            font-weight: 700;
-
-            transition: 0.2s ease;
         }
 
-        .btn:hover {
+        .nav-btn:hover {
+            background: rgba(0, 217, 255, 0.15);
+            border-color: #00d9ff;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.2);
             transform: translateY(-2px);
         }
 
-        .btn-primary {
-            background: white;
-            color: #4f46e5;
+        /* =========================
+           MAIN
+        ========================== */
+
+        .container {
+            width: 92%;
+            max-width: 1400px;
+            margin: 35px auto 70px;
         }
 
-        .btn-secondary {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
         }
 
-        .btn-dark {
-            background: #111827;
-            color: white;
+        .page-header h1 {
+            font-size: clamp(28px, 5vw, 48px);
+            color: #00d9ff;
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.35);
+            margin-bottom: 10px;
         }
 
-        /* ================= SUMMARY ================= */
+        .page-header p {
+            color: #8ea8ba;
+            font-size: 15px;
+        }
+
+        /* =========================
+           COMMON CARD
+        ========================== */
+
+        .card {
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(9, 30, 58, 0.92),
+                    rgba(3, 15, 35, 0.95)
+                );
+            border: 1px solid rgba(0, 195, 255, 0.18);
+            border-radius: 16px;
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.30),
+                inset 0 1px 0 rgba(255, 255, 255, 0.025);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(0, 195, 255, 0.12);
+        }
+
+        .card-header h2 {
+            color: #00d9ff;
+            font-size: 20px;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* =========================
+           CURRENT RESULT
+        ========================== */
+
+        .result-header {
+            margin-bottom: 25px;
+        }
+
+        .student-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .student-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .student-role {
+            display: inline-block;
+            margin-top: 6px;
+            color: #00d9ff;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .quiz-title {
+            color: #8ea8ba;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* =========================
+           SUMMARY CARDS
+        ========================== */
 
         .summary-grid {
             display: grid;
-
-            grid-template-columns:
-                repeat(5, 1fr);
-
+            grid-template-columns: repeat(5, 1fr);
             gap: 15px;
-
             margin-bottom: 25px;
         }
 
         .summary-card {
-            background: white;
-
-            padding: 22px 15px;
-
-            border-radius: 17px;
-
-            text-align: center;
-
-            box-shadow:
-                0 6px 22px rgba(0,0,0,0.06);
+            padding: 20px;
+            min-height: 125px;
+            border-radius: 14px;
+            background: rgba(0, 120, 220, 0.08);
+            border: 1px solid rgba(0, 195, 255, 0.15);
+            transition: 0.3s ease;
         }
 
-        .summary-icon {
-            font-size: 25px;
-            margin-bottom: 5px;
+        .summary-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 217, 255, 0.55);
+            box-shadow: 0 0 25px rgba(0, 217, 255, 0.10);
         }
 
-        .summary-title {
-            font-size: 12px;
-
-            text-transform: uppercase;
-
-            color: #6b7280;
-
-            font-weight: 700;
+        .summary-label {
+            color: #7f9aad;
+            font-size: 13px;
+            margin-bottom: 12px;
         }
 
         .summary-value {
-            margin-top: 5px;
-
-            font-size: 28px;
-
+            font-size: 30px;
             font-weight: 800;
-
-            color: #111827;
+            color: #ffffff;
         }
 
-        /* ================= MAIN GRID ================= */
+        .summary-value.blue {
+            color: #00d9ff;
+        }
 
-        .main-grid {
+        .summary-value.green {
+            color: #00ff9d;
+        }
+
+        .summary-value.red {
+            color: #ff5c7c;
+        }
+
+        .summary-value.yellow {
+            color: #ffd166;
+        }
+
+        /* =========================
+           TWO COLUMN SECTION
+        ========================== */
+
+        .two-column {
             display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
+            grid-template-columns: 1fr 1fr;
             gap: 22px;
-
             margin-bottom: 25px;
         }
 
-        .card {
-            background: white;
-
-            border-radius: 20px;
-
-            padding: 25px;
-
-            box-shadow:
-                0 6px 22px rgba(0,0,0,0.06);
-        }
-
-        .card-title {
-            margin-bottom: 20px;
-        }
-
-        .card-title h2 {
-            color: #111827;
-
-            font-size: 21px;
-
-            margin-bottom: 3px;
-        }
-
-        .card-title p {
-            color: #6b7280;
-
-            font-size: 13px;
-        }
-
-        /* ================= CHART ================= */
-
         .chart-container {
-            position: relative;
-
-            height: 310px;
-        }
-
-        /* ================= PERFORMANCE ================= */
-
-        .performance-box {
-            margin-top: 20px;
-        }
-
-        .performance-header {
+            height: 330px;
             display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
+        .chart-container canvas {
+            max-height: 300px;
+        }
+
+        /* =========================
+           PERFORMANCE
+        ========================== */
+
+        .performance-item {
+            margin-bottom: 22px;
+        }
+
+        .performance-top {
+            display: flex;
             justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 9px;
+        }
 
-            margin-bottom: 8px;
+        .performance-title {
+            color: #d9f6ff;
+            font-size: 14px;
+            font-weight: 600;
+        }
 
+        .performance-value {
+            color: #00d9ff;
+            font-size: 14px;
             font-weight: 700;
         }
 
-        .large-progress {
-            height: 13px;
-
+        .progress-track {
             width: 100%;
-
-            background: #e5e7eb;
-
+            height: 11px;
             border-radius: 20px;
-
+            background: #07182b;
+            border: 1px solid rgba(0, 195, 255, 0.15);
             overflow: hidden;
         }
 
-        .large-progress-bar {
+        .progress-fill {
+            width: 0;
             height: 100%;
-
-            width: 0%;
-
-            background:
-                linear-gradient(
-                    90deg,
-                    #4f46e5,
-                    #7c3aed
-                );
-
-            border-radius: 20px;
-
-            transition: width 1s ease;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #006eff, #00eaff);
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.30);
+            transition: width 1.2s ease;
         }
 
-        /* ================= RECOMMENDATION ================= */
+        /* =========================
+           RECOMMENDATION
+        ========================== */
 
         .recommendation {
-            background:
-                linear-gradient(
-                    135deg,
-                    #eef2ff,
-                    #f5f3ff
-                );
-
-            border-left:
-                5px solid #6366f1;
+            margin-bottom: 25px;
+            border: 1px solid rgba(0, 217, 255, 0.18);
+            border-radius: 16px;
+            background: rgba(0, 100, 180, 0.06);
+            padding: 24px;
         }
 
-        .recommendation-level {
-            display: inline-block;
-
-            background: #e0e7ff;
-
-            color: #4338ca;
-
-            padding: 7px 13px;
-
-            border-radius: 20px;
-
-            font-size: 13px;
-
-            font-weight: 800;
-
-            margin-bottom: 14px;
+        .recommendation h2 {
+            color: #00d9ff;
+            margin-bottom: 12px;
         }
 
         .recommendation-message {
-            margin-bottom: 16px;
-
-            color: #374151;
+            color: #c8e8f2;
+            line-height: 1.7;
+            margin-bottom: 18px;
         }
 
-        .steps {
-            padding-left: 22px;
-
-            margin-top: 8px;
+        .recommendation-list {
+            padding-left: 20px;
+            color: #a8c3d0;
+            line-height: 1.8;
         }
 
-        .steps li {
-            margin-bottom: 7px;
+        .recommendation-list li {
+            margin-bottom: 6px;
         }
 
-        .tip-box,
-        .plan-box {
-            background: white;
-
-            padding: 15px;
-
-            border-radius: 12px;
-
-            margin-top: 17px;
-        }
-
-        .tip-box strong,
-        .plan-box strong {
-            color: #4338ca;
-
-            display: block;
-
-            margin-bottom: 5px;
-        }
-
-        /* ================= QUESTION REVIEW ================= */
-
-        .question-section {
-            margin-top: 25px;
-        }
-
-        .review-toolbar {
-            display: flex;
-
-            flex-wrap: wrap;
-
-            justify-content: space-between;
-
-            gap: 12px;
-
-            margin-bottom: 20px;
-        }
+        /* =========================
+           QUESTION FILTERS
+        ========================== */
 
         .filter-buttons {
             display: flex;
-
             flex-wrap: wrap;
-
-            gap: 7px;
+            gap: 10px;
+            margin-bottom: 22px;
         }
 
         .filter-btn {
-            background: white;
-
-            color: #374151;
-
-            border:
-                1px solid #d1d5db;
-
-            padding: 8px 13px;
-
+            border: 1px solid rgba(0, 195, 255, 0.25);
+            background: rgba(0, 100, 180, 0.08);
+            color: #a8ddec;
+            padding: 9px 16px;
             border-radius: 8px;
-
             cursor: pointer;
-
-            font-size: 13px;
-
-            font-weight: 600;
+            transition: 0.25s ease;
         }
 
         .filter-btn:hover,
         .filter-btn.active {
-            background: #4f46e5;
-
-            color: white;
-
-            border-color: #4f46e5;
+            background: rgba(0, 195, 255, 0.16);
+            border-color: #00d9ff;
+            color: #ffffff;
         }
 
-        .question-count {
-            color: #6b7280;
-
-            font-size: 13px;
-
-            align-self: center;
-        }
+        /* =========================
+           QUESTION REVIEW
+        ========================== */
 
         .question-card {
-            background: white;
-
-            border-radius: 15px;
-
-            padding: 22px;
-
+            padding: 20px;
             margin-bottom: 15px;
-
-            border-left: 5px solid #d1d5db;
-
-            box-shadow:
-                0 5px 18px rgba(0,0,0,0.05);
+            border-radius: 13px;
+            background: rgba(1, 16, 34, 0.75);
+            border: 1px solid rgba(0, 195, 255, 0.12);
+            transition: 0.3s ease;
         }
 
-        .question-card.correct {
-            border-left-color: #16a34a;
-        }
-
-        .question-card.incorrect {
-            border-left-color: #dc2626;
-        }
-
-        .question-card.unanswered {
-            border-left-color: #f59e0b;
+        .question-card:hover {
+            border-color: rgba(0, 217, 255, 0.35);
         }
 
         .question-card.hidden {
             display: none;
         }
 
-        .question-top {
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: flex-start;
-
-            gap: 15px;
-
-            margin-bottom: 16px;
-        }
-
         .question-number {
-            color: #4f46e5;
-
+            color: #00d9ff;
             font-size: 13px;
-
-            font-weight: 800;
-
-            margin-bottom: 5px;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
 
         .question-text {
-            font-size: 17px;
-
-            font-weight: 700;
-
-            color: #111827;
-        }
-
-        .status {
-            flex-shrink: 0;
-
-            padding: 6px 12px;
-
-            border-radius: 20px;
-
-            font-size: 11px;
-
-            font-weight: 800;
-        }
-
-        .status.correct {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status.incorrect {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .status.unanswered {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        /* ================= ANSWERS ================= */
-
-        .answer-grid {
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 14px;
+            color: #ffffff;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 15px;
         }
 
         .answer-box {
-            padding: 15px;
-
-            border-radius: 11px;
-
-            background: #f9fafb;
-
-            border: 1px solid #e5e7eb;
+            padding: 12px 15px;
+            border-radius: 9px;
+            margin-top: 8px;
+            font-size: 14px;
+            line-height: 1.5;
         }
 
-        .answer-box.your-correct {
-            background: #ecfdf5;
-
-            border-color: #86efac;
+        .answer-selected {
+            background: rgba(0, 140, 255, 0.08);
+            border-left: 3px solid #00aaff;
         }
 
-        .answer-box.your-wrong {
-            background: #fef2f2;
-
-            border-color: #fca5a5;
+        .answer-correct {
+            background: rgba(0, 255, 150, 0.07);
+            border-left: 3px solid #00ff9d;
         }
 
-        .answer-box.correct-answer {
-            background: #eff6ff;
+        .answer-wrong {
+            background: rgba(255, 60, 100, 0.07);
+            border-left: 3px solid #ff5c7c;
+        }
 
-            border-color: #93c5fd;
+        .answer-unanswered {
+            background: rgba(255, 200, 70, 0.07);
+            border-left: 3px solid #ffd166;
         }
 
         .answer-label {
-            font-size: 11px;
-
-            text-transform: uppercase;
-
-            color: #6b7280;
-
-            font-weight: 800;
-
-            margin-bottom: 5px;
+            font-weight: 700;
+            margin-right: 5px;
         }
 
-        .answer-value {
-            color: #111827;
-
-            font-size: 14px;
-
-            word-break: break-word;
-        }
-
-        /* ================= SUBJECT PERFORMANCE ================= */
-
-        .subject-section {
-            margin-top: 25px;
-        }
-
-        .subject-list {
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 15px;
-        }
+        /* =========================
+           SUBJECT PERFORMANCE
+        ========================== */
 
         .subject-item {
-            background: #f9fafb;
-
-            border-radius: 12px;
-
-            padding: 16px;
+            margin-bottom: 20px;
         }
 
-        .subject-header {
+        .subject-top {
             display: flex;
-
             justify-content: space-between;
-
+            align-items: center;
             margin-bottom: 8px;
+        }
 
+        .subject-name {
+            color: #d9f6ff;
+            font-size: 14px;
             font-weight: 700;
         }
 
-        .progress {
-            width: 100%;
-
-            height: 9px;
-
-            background: #e5e7eb;
-
-            border-radius: 20px;
-
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            width: 0%;
-
-            height: 100%;
-
-            background:
-                linear-gradient(
-                    90deg,
-                    #4f46e5,
-                    #7c3aed
-                );
-
-            border-radius: 20px;
-
-            transition: width 1s ease;
-        }
-
-        .subject-meta {
-            margin-top: 7px;
-
-            color: #6b7280;
-
+        .subject-percentage {
+            color: #00d9ff;
             font-size: 13px;
+            font-weight: 700;
         }
 
-        /* ================= HISTORY ================= */
-
-        .history-section {
-            margin-top: 25px;
+        .subject-progress {
+            width: 100%;
+            height: 10px;
+            border-radius: 20px;
+            background: #07182b;
+            overflow: hidden;
+            border: 1px solid rgba(0, 195, 255, 0.15);
         }
+
+        .subject-progress-fill {
+            width: 0;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #006eff, #00d9ff);
+            box-shadow: 0 0 14px rgba(0, 217, 255, 0.25);
+            transition: width 1.2s ease;
+        }
+
+        /* =========================
+           HISTORY TABLE
+        ========================== */
 
         .table-wrapper {
             width: 100%;
-
             overflow-x: auto;
         }
 
-        table {
+        .history-table {
             width: 100%;
-
             border-collapse: collapse;
+            min-width: 850px;
         }
 
-        th,
-        td {
-            padding: 13px;
-
+        .history-table th {
+            padding: 14px;
             text-align: left;
-
-            border-bottom:
-                1px solid #e5e7eb;
-
-            white-space: nowrap;
-        }
-
-        th {
-            background: #f9fafb;
-
-            color: #6b7280;
-
-            font-size: 12px;
-
+            color: #00d9ff;
+            background: #06172b;
+            border-bottom: 1px solid rgba(0, 195, 255, 0.22);
+            font-size: 13px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        td {
+        .history-table td {
+            padding: 14px;
+            color: #b9d4df;
+            border-bottom: 1px solid rgba(0, 195, 255, 0.08);
+            background: rgba(3, 17, 36, 0.75);
             font-size: 14px;
         }
 
-        /* ================= EMPTY ================= */
+        .history-table tr:hover td {
+            background: rgba(0, 120, 220, 0.08);
+        }
 
-        .empty {
-            background: white;
+        .score-badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 6px;
+            background: rgba(0, 195, 255, 0.10);
+            color: #00d9ff;
+            font-weight: 700;
+        }
 
-            border-radius: 20px;
+        .percentage-badge {
+            color: #00ff9d;
+            font-weight: 700;
+        }
 
-            padding: 60px 20px;
+        /* =========================
+           EMPTY STATE
+        ========================== */
 
+        .empty-state {
             text-align: center;
-
-            box-shadow:
-                0 6px 22px rgba(0,0,0,0.06);
+            padding: 55px 20px;
+            color: #7f9aad;
         }
 
-        .empty-icon {
-            font-size: 45px;
-
-            margin-bottom: 12px;
+        .empty-state h2 {
+            color: #00d9ff;
+            margin-bottom: 10px;
         }
 
-        .empty h2 {
-            margin-bottom: 8px;
-        }
-
-        .empty p {
-            color: #6b7280;
-        }
-
-        /* ================= BACK TO TOP ================= */
+        /* =========================
+           BACK TO TOP
+        ========================== */
 
         .back-top {
             position: fixed;
-
-            right: 22px;
-
-            bottom: 22px;
-
+            right: 25px;
+            bottom: 25px;
             width: 45px;
-
             height: 45px;
-
-            border: none;
-
+            border: 1px solid rgba(0, 217, 255, 0.4);
             border-radius: 50%;
-
-            background: #4f46e5;
-
-            color: white;
-
-            font-size: 20px;
-
+            background: #06172b;
+            color: #00d9ff;
             cursor: pointer;
-
             display: none;
-
             align-items: center;
-
             justify-content: center;
-
-            z-index: 100;
+            font-size: 20px;
+            z-index: 900;
+            transition: 0.3s ease;
         }
 
-        .back-top.show {
-            display: flex;
+        .back-top:hover {
+            background: #08305a;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.25);
         }
 
-        /* ================= RESPONSIVE ================= */
+        /* =========================
+           RESPONSIVE
+        ========================== */
 
-        @media (max-width: 1050px) {
+        @media (max-width: 1100px) {
+            .summary-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 800px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
 
             .summary-grid {
-                grid-template-columns:
-                    repeat(3, 1fr);
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .nav-container {
+                flex-direction: column;
+            }
+
+            .page-header h1 {
+                font-size: 32px;
             }
         }
 
-        @media (max-width: 850px) {
-
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .answer-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 600px) {
-
+        @media (max-width: 520px) {
             .container {
                 width: 94%;
-                margin-top: 15px;
-            }
-
-            .header {
-                padding: 25px 20px;
-            }
-
-            .header h1 {
-                font-size: 27px;
+                margin-top: 25px;
             }
 
             .summary-grid {
-                grid-template-columns:
-                    repeat(2, 1fr);
+                grid-template-columns: 1fr;
             }
 
-            .summary-value {
-                font-size: 23px;
+            .summary-card {
+                min-height: 100px;
             }
 
-            .card {
-                padding: 18px;
+            .card-body {
+                padding: 16px;
             }
 
-            .question-top {
+            .student-info {
                 flex-direction: column;
-            }
-
-            .header-actions {
-                flex-direction: column;
-            }
-
-            .header-actions .btn {
-                width: 100%;
-            }
-
-            .chart-container {
-                height: 270px;
+                align-items: flex-start;
             }
         }
 
-        /* ================= PRINT ================= */
+        /* =========================
+           PRINT
+        ========================== */
 
         @media print {
-
             body {
-                background: white;
+                background: #ffffff;
+                color: #000000;
             }
 
-            .header-actions,
-            .filter-buttons,
-            .back-top {
+            .topbar,
+            .back-top,
+            .filter-buttons {
                 display: none !important;
             }
 
-            .container {
-                width: 100%;
-                max-width: none;
-                margin: 0;
+            .card,
+            .recommendation {
+                box-shadow: none;
+                border: 1px solid #cccccc;
+                background: #ffffff;
             }
 
-            .card,
-            .summary-card,
-            .question-card {
-                box-shadow: none;
-                break-inside: avoid;
+            .summary-value,
+            .page-header h1,
+            .card-header h2,
+            .recommendation h2,
+            .subject-name,
+            .question-text {
+                color: #000000;
             }
         }
-
     </style>
 </head>
 
-
 <body>
 
-<div class="container">
+    <!-- =========================
+         NAVIGATION
+    ========================== -->
 
+    <header class="topbar">
+        <div class="nav-container">
 
-    <!-- =====================================================
-         HEADER
-         ===================================================== -->
-
-    <div class="header">
-
-        {% if current and current.quiz %}
-
-            <h1>
-                Quiz Result
-            </h1>
-
-            <div class="header-subtitle">
-
-                <strong>
-                    {{ current.quiz.subject|default("Quiz") }}
-                </strong>
-
-                {% if current.quiz.chapter %}
-                    - {{ current.quiz.chapter }}
-                {% endif %}
-
-            </div>
-
-        {% else %}
-
-            <h1>
-                Quiz Results
-            </h1>
-
-            <div class="header-subtitle">
-                Detailed quiz performance
-            </div>
-
-        {% endif %}
-
-
-        <div class="header-actions">
-
-            <!-- Direct URL: no Flask endpoint dependency -->
-
-            <a
-                href="/student"
-                class="btn btn-primary">
-
-                🏠 Back to Dashboard
-
+            <a href="#" class="logo">
+                QUIZ MASTER
             </a>
 
+            <div class="nav-actions">
 
-            {% if current and current.quiz %}
+                {% if role == "student" %}
+                    <a href="{{ url_for('student_dashboard') }}" class="nav-btn">
+                        Dashboard
+                    </a>
+                {% elif role == "staff" %}
+                    <a href="{{ url_for('staff_dashboard') }}" class="nav-btn">
+                        Dashboard
+                    </a>
+                {% elif role == "admin" %}
+                    <a href="{{ url_for('admin_dashboard') }}" class="nav-btn">
+                        Dashboard
+                    </a>
+                {% endif %}
 
-                <!-- Direct URL: no url_for dependency -->
-
-                <a
-                    href="/start_quiz/{{ current.quiz.id }}"
-                    class="btn btn-secondary">
-
-                    🔄 Retry Quiz
-
+                <a href="#" onclick="window.print(); return false;" class="nav-btn">
+                    Print
                 </a>
 
-            {% endif %}
-
-
-            <button
-                type="button"
-                class="btn btn-secondary"
-                onclick="window.print()">
-
-                🖨️ Print / PDF
-
-            </button>
+            </div>
 
         </div>
-
-    </div>
-
+    </header>
 
 
-    <!-- =====================================================
-         CURRENT RESULT
-         ===================================================== -->
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
 
-    {% if current %}
+    <main class="container">
 
-
-        <!-- =================================================
-             SAFE JAVASCRIPT DATA
-             ================================================= -->
-
-        <div
-            id="chartData"
-
-            data-correct="{{ current.correct|default(0)|int }}"
-
-            data-incorrect="{{ current.incorrect|default(0)|int }}"
-
-            data-unanswered="{{ current.unanswered|default(0)|int }}"
-
-            data-percentage="{{ current.percentage|default(0)|float }}"
-
-            data-accuracy="{{ current.accuracy|default(0)|float }}">
-
-        </div>
+        <section class="page-header">
+            <h1>Detailed Quiz Results</h1>
+            <p>Analyze quiz performance, answers and learning progress</p>
+        </section>
 
 
+        {% if current %}
 
-        <!-- =================================================
+        <!-- =========================
+             CURRENT RESULT
+        ========================== -->
+
+        <section class="card result-header">
+
+            <div class="card-body">
+
+                <div class="student-info">
+
+                    <div>
+                        <div class="student-name">
+                            {{ current.student_name|default("Student") }}
+                        </div>
+
+                        <div class="student-role">
+                            {{ role|default("user") }}
+                        </div>
+
+                        <div class="quiz-title">
+                            {{ current.subject|default("Quiz") }}
+
+                            {% if current.chapter %}
+                                • {{ current.chapter }}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if current.taken_at %}
+                    <div class="quiz-title">
+                        {{ current.taken_at.strftime("%d %b %Y, %I:%M %p") }}
+                    </div>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
              SUMMARY
-             ================================================= -->
+        ========================== -->
 
-        <div class="summary-grid">
-
+        <section class="summary-grid">
 
             <div class="summary-card">
-
-                <div class="summary-icon">
-                    🏆
+                <div class="summary-label">Score</div>
+                <div class="summary-value blue">
+                    {{ current.score|default(0) }}/{{ current.total|default(0) }}
                 </div>
-
-                <div class="summary-title">
-                    Score
-                </div>
-
-                <div class="summary-value">
-
-                    {{ current.score|default(0) }}
-
-                    /
-
-                    {{ current.total|default(0) }}
-
-                </div>
-
             </div>
 
-
-
             <div class="summary-card">
-
-                <div class="summary-icon">
-                    📊
+                <div class="summary-label">Percentage</div>
+                <div class="summary-value green">
+                    {{ "%.1f"|format(current.percentage|default(0, true)|float) }}%
                 </div>
-
-                <div class="summary-title">
-                    Percentage
-                </div>
-
-                <div class="summary-value">
-
-                    {{ current.percentage|default(0)|round(1) }}%
-
-                </div>
-
             </div>
 
-
-
             <div class="summary-card">
-
-                <div class="summary-icon">
-                    ✅
-                </div>
-
-                <div class="summary-title">
-                    Correct
-                </div>
-
-                <div class="summary-value">
-
+                <div class="summary-label">Correct</div>
+                <div class="summary-value green">
                     {{ current.correct|default(0) }}
-
                 </div>
-
             </div>
 
-
-
             <div class="summary-card">
-
-                <div class="summary-icon">
-                    ❌
-                </div>
-
-                <div class="summary-title">
-                    Incorrect
-                </div>
-
-                <div class="summary-value">
-
+                <div class="summary-label">Incorrect</div>
+                <div class="summary-value red">
                     {{ current.incorrect|default(0) }}
-
                 </div>
-
             </div>
-
-
 
             <div class="summary-card">
-
-                <div class="summary-icon">
-                    ⚪
-                </div>
-
-                <div class="summary-title">
-                    Unanswered
-                </div>
-
-                <div class="summary-value">
-
+                <div class="summary-label">Unanswered</div>
+                <div class="summary-value yellow">
                     {{ current.unanswered|default(0) }}
-
                 </div>
-
             </div>
 
-        </div>
+        </section>
 
 
+        <!-- =========================
+             CHART + PERFORMANCE
+        ========================== -->
 
-        <!-- =================================================
-             CHART + RECOMMENDATION
-             ================================================= -->
-
-        <div class="main-grid">
-
+        <section class="two-column">
 
             <!-- CHART -->
 
             <div class="card">
 
-                <div class="card-title">
-
-                    <h2>
-                        Answer Analysis
-                    </h2>
-
-                    <p>
-                        Correct, incorrect and unanswered questions
-                    </p>
-
+                <div class="card-header">
+                    <h2>Answer Analysis</h2>
                 </div>
 
+                <div class="card-body">
 
-                <div class="chart-container">
-
-                    <canvas id="resultChart"></canvas>
-
-                </div>
-
-
-                <div class="performance-box">
-
-                    <div class="performance-header">
-
-                        <span>
-                            Overall Performance
-                        </span>
-
-                        <span id="performancePercentage">
-                            0%
-                        </span>
-
+                    <div
+                        id="chartData"
+                        data-correct="{{ current.correct|default(0, true)|int }}"
+                        data-incorrect="{{ current.incorrect|default(0, true)|int }}"
+                        data-unanswered="{{ current.unanswered|default(0, true)|int }}">
                     </div>
 
-
-                    <div class="large-progress">
-
-                        <div
-                            id="performanceBar"
-                            class="large-progress-bar">
-                        </div>
-
+                    <div class="chart-container">
+                        <canvas id="resultChart"></canvas>
                     </div>
 
                 </div>
@@ -1111,627 +833,426 @@
             </div>
 
 
+            <!-- PERFORMANCE -->
 
-            <!-- RECOMMENDATION -->
+            <div class="card">
 
-            <div class="card recommendation">
+                <div class="card-header">
+                    <h2>Performance</h2>
+                </div>
 
-                <div class="card-title">
+                <div class="card-body">
 
-                    <h2>
-                        Performance Recommendation
-                    </h2>
+                    <div class="performance-item">
 
-                    <p>
-                        Suggested next steps
-                    </p>
+                        <div class="performance-top">
+                            <span class="performance-title">
+                                Overall Percentage
+                            </span>
+
+                            <span class="performance-value">
+                                {{ "%.1f"|format(current.percentage|default(0, true)|float) }}%
+                            </span>
+                        </div>
+
+                        <div class="progress-track">
+
+                            <div
+                                class="progress-fill"
+                                data-width="{{ current.percentage|default(0, true)|float }}">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="performance-item">
+
+                        <div class="performance-top">
+                            <span class="performance-title">
+                                Accuracy
+                            </span>
+
+                            <span class="performance-value">
+                                {{ "%.1f"|format(current.accuracy|default(0, true)|float) }}%
+                            </span>
+                        </div>
+
+                        <div class="progress-track">
+
+                            <div
+                                class="progress-fill"
+                                data-width="{{ current.accuracy|default(0, true)|float }}">
+                            </div>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
-
-                {% if current.recommendation %}
-
-
-                    {% if current.recommendation.level %}
-
-                        <div class="recommendation-level">
-
-                            {{ current.recommendation.level }}
-
-                        </div>
-
-                    {% endif %}
-
-
-                    {% if current.recommendation.message %}
-
-                        <p class="recommendation-message">
-
-                            {{ current.recommendation.message }}
-
-                        </p>
-
-                    {% endif %}
-
-
-                    {% if current.recommendation.steps %}
-
-                        <strong>
-                            Recommended Steps
-                        </strong>
-
-                        <ol class="steps">
-
-                            {% for step in current.recommendation.steps %}
-
-                                <li>
-                                    {{ step }}
-                                </li>
-
-                            {% endfor %}
-
-                        </ol>
-
-                    {% endif %}
-
-
-                    {% if current.recommendation.subject_tip %}
-
-                        <div class="tip-box">
-
-                            <strong>
-                                📚 Subject Tip
-                            </strong>
-
-                            <p>
-                                {{ current.recommendation.subject_tip }}
-                            </p>
-
-                        </div>
-
-                    {% endif %}
-
-
-                    {% if current.recommendation.plan %}
-
-                        <div class="plan-box">
-
-                            <strong>
-                                🎯 Study Plan
-                            </strong>
-
-                            <p>
-                                {{ current.recommendation.plan }}
-                            </p>
-
-                        </div>
-
-                    {% endif %}
-
-
-                {% else %}
-
-                    <p class="recommendation-message">
-
-                        Review your incorrect answers and continue
-                        practicing the topic.
-
-                    </p>
-
-                {% endif %}
-
             </div>
 
-        </div>
+        </section>
 
 
+        <!-- =========================
+             RECOMMENDATION
+        ========================== -->
 
-        <!-- =================================================
-             DETAILED QUESTIONS
-             ================================================= -->
+        {% if current.recommendation %}
 
-        <div class="card question-section">
+        <section class="recommendation">
+
+            <h2>
+                Learning Recommendation
+            </h2>
+
+            {% if current.recommendation.level %}
+            <p class="recommendation-message">
+                <strong>Level:</strong>
+                {{ current.recommendation.level }}
+            </p>
+            {% endif %}
+
+            {% if current.recommendation.message %}
+            <p class="recommendation-message">
+                {{ current.recommendation.message }}
+            </p>
+            {% endif %}
 
 
-            <div class="card-title">
+            {% if current.recommendation.steps %}
 
-                <h2>
-                    📝 Detailed Question Review
-                </h2>
+            <ul class="recommendation-list">
 
-                <p>
-                    Your answer compared with the correct answer
-                </p>
+                {% for step in current.recommendation.steps %}
+                    <li>{{ step }}</li>
+                {% endfor %}
 
+            </ul>
+
+            {% endif %}
+
+
+            {% if current.recommendation.subject_tip %}
+
+            <p class="recommendation-message">
+                <strong>Subject Tip:</strong>
+                {{ current.recommendation.subject_tip }}
+            </p>
+
+            {% endif %}
+
+
+            {% if current.recommendation.plan %}
+
+            <p class="recommendation-message">
+                <strong>Study Plan:</strong>
+                {{ current.recommendation.plan }}
+            </p>
+
+            {% endif %}
+
+        </section>
+
+        {% endif %}
+
+
+        <!-- =========================
+             QUESTION REVIEW
+        ========================== -->
+
+        {% if current.questions %}
+
+        <section class="card" id="questionReview">
+
+            <div class="card-header">
+                <h2>Detailed Question Review</h2>
             </div>
 
-
-
-            <!-- FILTERS -->
-
-            <div class="review-toolbar">
+            <div class="card-body">
 
                 <div class="filter-buttons">
-
 
                     <button
                         type="button"
                         class="filter-btn active"
                         data-filter="all">
-
                         All
-
                     </button>
-
 
                     <button
                         type="button"
                         class="filter-btn"
                         data-filter="correct">
-
-                        ✅ Correct
-
+                        Correct
                     </button>
-
 
                     <button
                         type="button"
                         class="filter-btn"
                         data-filter="incorrect">
-
-                        ❌ Incorrect
-
+                        Incorrect
                     </button>
-
 
                     <button
                         type="button"
                         class="filter-btn"
                         data-filter="unanswered">
-
-                        ⚪ Unanswered
-
+                        Unanswered
                     </button>
 
-
                 </div>
 
+
+                {% for question in current.questions %}
 
                 <div
-                    id="questionCount"
-                    class="question-count">
+                    class="question-card"
+                    data-status="{{ question.status|default('unanswered')|lower }}">
 
-                    Showing all questions
+                    <div class="question-number">
+                        Question {{ loop.index }}
+                    </div>
 
-                </div>
-
-            </div>
-
-
-
-            <!-- QUESTIONS -->
-
-            {% if current.questions %}
+                    <div class="question-text">
+                        {{ question.text|default("Question not available") }}
+                    </div>
 
 
-                {% for item in current.questions %}
+                    {% if question.selected_text %}
 
+                    <div class="answer-box answer-selected">
 
-                    {% if item.is_correct %}
+                        <span class="answer-label">
+                            Your Answer:
+                        </span>
 
-                        <div
-                            class="question-card correct"
-                            data-status="correct">
+                        {{ question.selected_text }}
 
-                    {% elif item.selected_text %}
-
-                        <div
-                            class="question-card incorrect"
-                            data-status="incorrect">
+                    </div>
 
                     {% else %}
 
-                        <div
-                            class="question-card unanswered"
-                            data-status="unanswered">
+                    <div class="answer-box answer-unanswered">
+
+                        <span class="answer-label">
+                            Your Answer:
+                        </span>
+
+                        Not Answered
+
+                    </div>
 
                     {% endif %}
 
 
-                            <div class="question-top">
+                    {% if question.correct_text %}
 
-                                <div>
+                    <div
+                        class="answer-box
+                        {% if question.is_correct %}
+                            answer-correct
+                        {% else %}
+                            answer-wrong
+                        {% endif %}">
 
-                                    <div class="question-number">
+                        <span class="answer-label">
+                            Correct Answer:
+                        </span>
 
-                                        Question {{ loop.index }}
+                        {{ question.correct_text }}
 
-                                    </div>
-
-
-                                    <div class="question-text">
-
-                                        {{ item.text|default("Question not available") }}
-
-                                    </div>
-
-                                </div>
-
-
-
-                                {% if item.is_correct %}
-
-                                    <span class="status correct">
-
-                                        CORRECT
-
-                                    </span>
-
-                                {% elif item.selected_text %}
-
-                                    <span class="status incorrect">
-
-                                        INCORRECT
-
-                                    </span>
-
-                                {% else %}
-
-                                    <span class="status unanswered">
-
-                                        NOT ANSWERED
-
-                                    </span>
-
-                                {% endif %}
-
-                            </div>
-
-
-
-                            <div class="answer-grid">
-
-
-                                <!-- YOUR ANSWER -->
-
-                                {% if item.is_correct %}
-
-                                    <div class="answer-box your-correct">
-
-                                {% elif item.selected_text %}
-
-                                    <div class="answer-box your-wrong">
-
-                                {% else %}
-
-                                    <div class="answer-box">
-
-                                {% endif %}
-
-
-                                        <div class="answer-label">
-
-                                            Your Answer
-
-                                        </div>
-
-
-                                        <div class="answer-value">
-
-                                            {% if item.selected_text %}
-
-                                                {{ item.selected_text }}
-
-                                            {% else %}
-
-                                                <em>
-                                                    Not answered
-                                                </em>
-
-                                            {% endif %}
-
-                                        </div>
-
-                                    </div>
-
-
-
-                                <!-- CORRECT ANSWER -->
-
-                                <div class="answer-box correct-answer">
-
-                                    <div class="answer-label">
-
-                                        Correct Answer
-
-                                    </div>
-
-
-                                    <div class="answer-value">
-
-                                        {% if item.correct_text %}
-
-                                            {{ item.correct_text }}
-
-                                        {% else %}
-
-                                            <em>
-                                                Correct answer unavailable
-                                            </em>
-
-                                        {% endif %}
-
-                                    </div>
-
-                                </div>
-
-
-                            </div>
-
-
-                        </div>
-
-
-                {% endfor %}
-
-
-            {% else %}
-
-
-                <div class="empty">
-
-                    <div class="empty-icon">
-                        📝
                     </div>
 
-                    <h2>
-                        No Question Analysis
-                    </h2>
-
-                    <p>
-                        No detailed question information is available
-                        for this attempt.
-                    </p>
+                    {% endif %}
 
                 </div>
 
-
-            {% endif %}
-
-
-        </div>
-
-
-    {% else %}
-
-
-        <!-- =================================================
-             NO RESULT
-             ================================================= -->
-
-        <div class="empty">
-
-            <div class="empty-icon">
-                📊
-            </div>
-
-            <h2>
-                No Current Quiz Result
-            </h2>
-
-            <p>
-                Complete a quiz first to see your detailed result.
-            </p>
-
-            <br>
-
-            <a
-                href="/student"
-                class="btn btn-dark">
-
-                🏠 Back to Dashboard
-
-            </a>
-
-        </div>
-
-
-    {% endif %}
-
-
-
-    <!-- =====================================================
-         SUBJECT PERFORMANCE
-         ===================================================== -->
-
-    {% if subject_stats %}
-
-
-        <div class="card subject-section">
-
-            <div class="card-title">
-
-                <h2>
-                    📚 Subject Performance
-                </h2>
-
-                <p>
-                    Your performance across subjects
-                </p>
+                {% endfor %}
 
             </div>
 
+        </section>
 
-            <div class="subject-list">
+        {% endif %}
 
+
+        <!-- =========================
+             SUBJECT PERFORMANCE
+        ========================== -->
+
+        {% if subject_stats %}
+
+        <section class="card" style="margin-top: 25px;">
+
+            <div class="card-header">
+                <h2>Subject Performance</h2>
+            </div>
+
+            <div class="card-body">
 
                 {% for subject in subject_stats %}
 
+                <div class="subject-item">
 
-                    <div class="subject-item">
+                    <div class="subject-top">
 
+                        <span class="subject-name">
+                            {{ subject.subject|default("Unknown Subject") }}
+                        </span>
 
-                        <div class="subject-header">
-
-                            <span>
-                                {{ subject.subject|default("Unknown") }}
-                            </span>
-
-                            <span>
-                                {{ subject.percentage|default(0)|round(1) }}%
-                            </span>
-
-                        </div>
-
-
-                        <div class="progress">
-
-                            <div
-                                class="progress-bar"
-                                data-percentage="{{ subject.percentage|default(0)|float }}">
-                            </div>
-
-                        </div>
-
-
-                        <div class="subject-meta">
-
-                            Correct:
-                            {{ subject.correct|default(0) }}
-
-                            /
-
-                            {{ subject.total|default(0) }}
-
-                            &nbsp;&nbsp;|&nbsp;&nbsp;
-
-                            Attempts:
-                            {{ subject.attempts|default(0) }}
-
-                        </div>
-
+                        <span class="subject-percentage">
+                            {{ "%.1f"|format(subject.safe_percentage|default(subject.percentage, true)|float) }}%
+                        </span>
 
                     </div>
 
 
-                {% endfor %}
+                    <!--
+                        IMPORTANT:
+                        No Jinja expression is inside style="width:...".
+                        This avoids VS Code CSS "property value expected".
+                    -->
 
+                    <div class="subject-progress">
+
+                        <div
+                            class="subject-progress-fill"
+                            data-width="{{ subject.safe_percentage|default(subject.percentage, true)|float }}">
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
 
             </div>
 
-        </div>
+        </section>
+
+        {% endif %}
 
 
-    {% endif %}
+        {% else %}
 
+        <!-- =========================
+             NO CURRENT RESULT
+        ========================== -->
 
+        <section class="card">
 
-    <!-- =====================================================
-         QUIZ HISTORY
-         ===================================================== -->
+            <div class="empty-state">
 
-    {% if results %}
-
-
-        <div class="card history-section">
-
-            <div class="card-title">
-
-                <h2>
-                    📈 Quiz History
-                </h2>
+                <h2>No Detailed Result Available</h2>
 
                 <p>
-                    Previous quiz attempts
+                    There is no current detailed quiz result to display.
                 </p>
 
             </div>
 
+        </section>
 
-            <div class="table-wrapper">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                #
-                            </th>
-
-                            <th>
-                                Subject
-                            </th>
-
-                            <th>
-                                Chapter
-                            </th>
-
-                            <th>
-                                Score
-                            </th>
-
-                            <th>
-                                Percentage
-                            </th>
-
-                            <th>
-                                Date
-                            </th>
-
-                        </tr>
-
-                    </thead>
+        {% endif %}
 
 
-                    <tbody>
+        <!-- =========================
+             QUIZ HISTORY
+        ========================== -->
 
+        <section class="card" style="margin-top: 25px;">
 
-                        {% for result in results %}
+            <div class="card-header">
+                <h2>Quiz History</h2>
+            </div>
 
+            <div class="card-body">
+
+                {% if history %}
+
+                <div class="table-wrapper">
+
+                    <table class="history-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Student Name
+                                </th>
+
+                                <th>
+                                    Subject
+                                </th>
+
+                                <th>
+                                    Chapter
+                                </th>
+
+                                <th>
+                                    Score
+                                </th>
+
+                                <th>
+                                    Percentage
+                                </th>
+
+                                <th>
+                                    Date
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for row in history %}
 
                             <tr>
 
                                 <td>
-                                    {{ loop.index }}
+                                    {{ row.student_name|default("Student") }}
                                 </td>
 
                                 <td>
-                                    {{ result.subject|default("N/A") }}
+                                    {{ row.subject|default("-") }}
                                 </td>
 
                                 <td>
-                                    {{ result.chapter|default("N/A") }}
-                                </td>
-
-                                <td>
-
-                                    {{ result.score|default(0) }}
-
-                                    /
-
-                                    {{ result.total|default(0) }}
-
+                                    {{ row.chapter|default("-") }}
                                 </td>
 
                                 <td>
 
-                                    {{ result.percentage|default(0)|round(1) }}%
+                                    <span class="score-badge">
+                                        {{ row.score|default(0) }}/{{ row.total|default(0) }}
+                                    </span>
 
                                 </td>
 
                                 <td>
 
-                                    {% if result.taken_at %}
+                                    <span class="percentage-badge">
+                                        {{ "%.1f"|format(row.percentage|default(0, true)|float) }}%
+                                    </span>
 
-                                        {{ result.taken_at.strftime(
-                                            "%d-%m-%Y %I:%M %p"
-                                        ) }}
+                                </td>
+
+                                <td>
+
+                                    {% if row.taken_at %}
+
+                                        {{ row.taken_at.strftime("%d %b %Y, %I:%M %p") }}
 
                                     {% else %}
 
-                                        N/A
+                                        -
 
                                     {% endif %}
 
@@ -1739,467 +1260,271 @@
 
                             </tr>
 
+                            {% endfor %}
 
-                        {% endfor %}
+                        </tbody>
 
+                    </table>
 
-                    </tbody>
+                </div>
 
-                </table>
+                {% else %}
+
+                <div class="empty-state">
+
+                    <h2>No Quiz History</h2>
+
+                    <p>
+                        No quiz attempts are available yet.
+                    </p>
+
+                </div>
+
+                {% endif %}
 
             </div>
 
-        </div>
+        </section>
+
+    </main>
 
 
-    {% endif %}
+    <!-- =========================
+         BACK TO TOP
+    ========================== -->
+
+    <button
+        type="button"
+        class="back-top"
+        id="backTop"
+        aria-label="Back to top">
+
+        ↑
+
+    </button>
 
 
-</div>
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
 
+    <script>
 
+        document.addEventListener("DOMContentLoaded", function () {
 
-<!-- =========================================================
-     BACK TO TOP
-     ========================================================= -->
+            /* =========================
+               SAFE WIDTH FUNCTION
+            ========================== */
 
-<button
-    type="button"
-    id="backTop"
-    class="back-top"
-    aria-label="Back to top">
+            function animateWidths() {
 
-    ↑
+                const elements =
+                    document.querySelectorAll("[data-width]");
 
-</button>
+                elements.forEach(function (element) {
 
+                    let value =
+                        parseFloat(element.getAttribute("data-width"));
 
+                    if (isNaN(value)) {
+                        value = 0;
+                    }
 
-<script>
+                    value = Math.max(0, Math.min(100, value));
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+                    setTimeout(function () {
+                        element.style.width = value + "%";
+                    }, 150);
 
-
-        /* =====================================================
-           READ RESULT DATA SAFELY
-           ===================================================== */
-
-        const dataElement =
-            document.getElementById("chartData");
-
-
-        if (dataElement) {
-
-
-            const correct =
-                parseInt(
-                    dataElement.getAttribute(
-                        "data-correct"
-                    ),
-                    10
-                ) || 0;
-
-
-            const incorrect =
-                parseInt(
-                    dataElement.getAttribute(
-                        "data-incorrect"
-                    ),
-                    10
-                ) || 0;
-
-
-            const unanswered =
-                parseInt(
-                    dataElement.getAttribute(
-                        "data-unanswered"
-                    ),
-                    10
-                ) || 0;
-
-
-            const percentage =
-                parseFloat(
-                    dataElement.getAttribute(
-                        "data-percentage"
-                    )
-                ) || 0;
-
-
-
-            /* =================================================
-               PERFORMANCE
-               ================================================= */
-
-            const safePercentage =
-                Math.max(
-                    0,
-                    Math.min(
-                        100,
-                        percentage
-                    )
-                );
-
-
-            const performanceBar =
-                document.getElementById(
-                    "performanceBar"
-                );
-
-
-            const performanceText =
-                document.getElementById(
-                    "performancePercentage"
-                );
-
-
-            if (performanceBar) {
-
-                setTimeout(
-                    function () {
-
-                        performanceBar.style.width =
-                            safePercentage + "%";
-
-                    },
-                    200
-                );
+                });
 
             }
 
 
-            if (performanceText) {
-
-                performanceText.textContent =
-                    safePercentage.toFixed(1) + "%";
-
-            }
+            animateWidths();
 
 
+            /* =========================
+               RESULT CHART
+            ========================== */
 
-            /* =================================================
-               CHART
-               ================================================= */
+            const chartData =
+                document.getElementById("chartData");
 
             const chartCanvas =
-                document.getElementById(
-                    "resultChart"
-                );
+                document.getElementById("resultChart");
 
 
-            if (
-                chartCanvas &&
-                typeof Chart !== "undefined"
-            ) {
+            if (chartData && chartCanvas && typeof Chart !== "undefined") {
+
+                const correct =
+                    parseInt(
+                        chartData.getAttribute("data-correct")
+                    ) || 0;
+
+                const incorrect =
+                    parseInt(
+                        chartData.getAttribute("data-incorrect")
+                    ) || 0;
+
+                const unanswered =
+                    parseInt(
+                        chartData.getAttribute("data-unanswered")
+                    ) || 0;
 
 
-                new Chart(
-                    chartCanvas,
-                    {
-                        type: "doughnut",
+                new Chart(chartCanvas, {
 
-                        data: {
+                    type: "doughnut",
 
-                            labels: [
-                                "Correct",
-                                "Incorrect",
-                                "Unanswered"
+                    data: {
+
+                        labels: [
+                            "Correct",
+                            "Incorrect",
+                            "Unanswered"
+                        ],
+
+                        datasets: [{
+                            data: [
+                                correct,
+                                incorrect,
+                                unanswered
                             ],
 
-                            datasets: [
-                                {
-                                    data: [
-                                        correct,
-                                        incorrect,
-                                        unanswered
-                                    ],
+                            backgroundColor: [
+                                "#00ff9d",
+                                "#ff5c7c",
+                                "#ffd166"
+                            ],
 
-                                    borderWidth: 2
-                                }
-                            ]
+                            borderColor: "#020817",
 
-                        },
-
-                        options: {
-
-                            responsive: true,
-
-                            maintainAspectRatio: false,
-
-                            cutout: "65%",
-
-                            plugins: {
-
-                                legend: {
-
-                                    position: "bottom",
-
-                                    labels: {
-
-                                        padding: 18,
-
-                                        usePointStyle: true
-
-                                    }
-
-                                },
-
-                                tooltip: {
-
-                                    callbacks: {
-
-                                        label:
-                                            function (context) {
-
-                                                return (
-                                                    context.label +
-                                                    ": " +
-                                                    context.raw
-                                                );
-
-                                            }
-
-                                    }
-
-                                }
-
-                            }
-
-                        }
-
-                    }
-                );
-
-            }
-
-        }
-
-
-
-        /* =====================================================
-           SUBJECT PROGRESS BARS
-           ===================================================== */
-
-        const progressBars =
-            document.querySelectorAll(
-                ".progress-bar"
-            );
-
-
-        progressBars.forEach(
-            function (bar) {
-
-
-                let value =
-                    parseFloat(
-                        bar.getAttribute(
-                            "data-percentage"
-                        )
-                    );
-
-
-                if (isNaN(value)) {
-                    value = 0;
-                }
-
-
-                value =
-                    Math.max(
-                        0,
-                        Math.min(
-                            100,
-                            value
-                        )
-                    );
-
-
-                setTimeout(
-                    function () {
-
-                        bar.style.width =
-                            value + "%";
+                            borderWidth: 4
+                        }]
 
                     },
-                    200
-                );
 
-            }
-        );
+                    options: {
 
+                        responsive: true,
 
+                        maintainAspectRatio: false,
 
-        /* =====================================================
-           QUESTION FILTER
-           ===================================================== */
+                        cutout: "65%",
 
-        const filterButtons =
-            document.querySelectorAll(
-                ".filter-btn"
-            );
+                        plugins: {
 
+                            legend: {
 
-        const questionCards =
-            document.querySelectorAll(
-                ".question-card"
-            );
+                                position: "bottom",
 
-
-        const questionCount =
-            document.getElementById(
-                "questionCount"
-            );
-
-
-        filterButtons.forEach(
-            function (button) {
-
-
-                button.addEventListener(
-                    "click",
-                    function () {
-
-
-                        filterButtons.forEach(
-                            function (item) {
-
-                                item.classList.remove(
-                                    "active"
-                                );
-
-                            }
-                        );
-
-
-                        button.classList.add(
-                            "active"
-                        );
-
-
-                        const selectedFilter =
-                            button.getAttribute(
-                                "data-filter"
-                            );
-
-
-                        let visibleCount = 0;
-
-
-                        questionCards.forEach(
-                            function (card) {
-
-
-                                const status =
-                                    card.getAttribute(
-                                        "data-status"
-                                    );
-
-
-                                if (
-                                    selectedFilter === "all" ||
-                                    status === selectedFilter
-                                ) {
-
-                                    card.classList.remove(
-                                        "hidden"
-                                    );
-
-                                    visibleCount++;
-
-                                } else {
-
-                                    card.classList.add(
-                                        "hidden"
-                                    );
-
+                                labels: {
+                                    color: "#c9e9f5",
+                                    padding: 18
                                 }
 
                             }
-                        );
-
-
-                        if (questionCount) {
-
-                            questionCount.textContent =
-                                "Showing " +
-                                visibleCount +
-                                " question" +
-                                (
-                                    visibleCount === 1
-                                        ? ""
-                                        : "s"
-                                );
 
                         }
 
                     }
-                );
+
+                });
 
             }
-        );
 
 
+            /* =========================
+               QUESTION FILTER
+            ========================== */
 
-        /* =====================================================
-           BACK TO TOP
-           ===================================================== */
+            const filterButtons =
+                document.querySelectorAll(".filter-btn");
 
-        const backTop =
-            document.getElementById(
-                "backTop"
-            );
-
-
-        window.addEventListener(
-            "scroll",
-            function () {
+            const questionCards =
+                document.querySelectorAll(".question-card");
 
 
-                if (!backTop) {
-                    return;
-                }
+            filterButtons.forEach(function (button) {
 
+                button.addEventListener("click", function () {
+
+                    filterButtons.forEach(function (btn) {
+                        btn.classList.remove("active");
+                    });
+
+                    button.classList.add("active");
+
+
+                    const filter =
+                        button.getAttribute("data-filter");
+
+
+                    questionCards.forEach(function (card) {
+
+                        const status =
+                            (
+                                card.getAttribute("data-status") || ""
+                            ).toLowerCase();
+
+
+                        if (
+                            filter === "all" ||
+                            status === filter
+                        ) {
+
+                            card.classList.remove("hidden");
+
+                        } else {
+
+                            card.classList.add("hidden");
+
+                        }
+
+                    });
+
+                });
+
+            });
+
+
+            /* =========================
+               BACK TO TOP
+            ========================== */
+
+            const backTop =
+                document.getElementById("backTop");
+
+
+            window.addEventListener("scroll", function () {
 
                 if (window.scrollY > 400) {
 
-                    backTop.classList.add(
-                        "show"
-                    );
+                    backTop.style.display = "flex";
 
                 } else {
 
-                    backTop.classList.remove(
-                        "show"
-                    );
+                    backTop.style.display = "none";
 
                 }
 
-            }
-        );
+            });
 
 
-        if (backTop) {
+            backTop.addEventListener("click", function () {
 
-            backTop.addEventListener(
-                "click",
-                function () {
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
 
-                    window.scrollTo({
-                        top: 0,
-                        behavior: "smooth"
-                    });
+            });
 
-                }
-            );
+        });
 
-        }
-
-    }
-);
-
-</script>
-
+    </script>
 
 </body>
 </html>
+
