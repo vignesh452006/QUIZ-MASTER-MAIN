@@ -1,0 +1,2707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Configuration | Quiz Master</title>
+
+    <!-- Bootstrap -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        /* =========================================================
+           GLOBAL
+        ========================================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #d9f5ff;
+            font-family: "Rajdhani", sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 15% 15%,
+                    rgba(0, 140, 255, 0.18),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 85% 80%,
+                    rgba(0, 220, 255, 0.12),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    135deg,
+                    #020817 0%,
+                    #031226 45%,
+                    #020b19 100%
+                );
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -3;
+
+            background-image:
+                linear-gradient(
+                    rgba(0, 157, 255, 0.055) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(0, 157, 255, 0.055) 1px,
+                    transparent 1px
+                );
+
+            background-size: 45px 45px;
+
+            animation: gridMove 18s linear infinite;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -2;
+
+            background:
+                linear-gradient(
+                    rgba(0, 190, 255, 0.025) 50%,
+                    transparent 50%
+                );
+
+            background-size: 100% 5px;
+            opacity: 0.4;
+        }
+
+        @keyframes gridMove {
+            from {
+                background-position: 0 0;
+            }
+
+            to {
+                background-position: 45px 45px;
+            }
+        }
+
+        /* =========================================================
+           PARTICLES
+        ========================================================= */
+
+        .particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+
+            background: #00bfff;
+
+            box-shadow:
+                0 0 8px #00bfff,
+                0 0 18px rgba(0, 191, 255, 0.8);
+
+            animation: floatParticle linear infinite;
+        }
+
+        .particle:nth-child(1) {
+            left: 8%;
+            animation-duration: 13s;
+            animation-delay: -4s;
+        }
+
+        .particle:nth-child(2) {
+            left: 18%;
+            animation-duration: 17s;
+            animation-delay: -8s;
+        }
+
+        .particle:nth-child(3) {
+            left: 30%;
+            animation-duration: 11s;
+            animation-delay: -2s;
+        }
+
+        .particle:nth-child(4) {
+            left: 42%;
+            animation-duration: 16s;
+            animation-delay: -7s;
+        }
+
+        .particle:nth-child(5) {
+            left: 55%;
+            animation-duration: 12s;
+            animation-delay: -5s;
+        }
+
+        .particle:nth-child(6) {
+            left: 66%;
+            animation-duration: 18s;
+            animation-delay: -10s;
+        }
+
+        .particle:nth-child(7) {
+            left: 77%;
+            animation-duration: 14s;
+            animation-delay: -3s;
+        }
+
+        .particle:nth-child(8) {
+            left: 88%;
+            animation-duration: 19s;
+            animation-delay: -9s;
+        }
+
+        .particle:nth-child(9) {
+            left: 95%;
+            animation-duration: 15s;
+            animation-delay: -6s;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(110vh) scale(0.4);
+                opacity: 0;
+            }
+
+            15% {
+                opacity: 1;
+            }
+
+            85% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-15vh) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* =========================================================
+           GLOWING ORBS
+        ========================================================= */
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(2px);
+            z-index: -2;
+        }
+
+        .orb-one {
+            width: 230px;
+            height: 230px;
+            top: 80px;
+            left: -90px;
+
+            background: rgba(0, 128, 255, 0.09);
+            box-shadow:
+                0 0 100px rgba(0, 153, 255, 0.25);
+
+            animation: orbFloatOne 8s ease-in-out infinite;
+        }
+
+        .orb-two {
+            width: 280px;
+            height: 280px;
+            right: -110px;
+            bottom: 80px;
+
+            background: rgba(0, 204, 255, 0.07);
+            box-shadow:
+                0 0 120px rgba(0, 204, 255, 0.2);
+
+            animation: orbFloatTwo 10s ease-in-out infinite;
+        }
+
+        @keyframes orbFloatOne {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(70px, 90px);
+            }
+        }
+
+        @keyframes orbFloatTwo {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(-70px, -80px);
+            }
+        }
+
+        /* =========================================================
+           NAVBAR
+        ========================================================= */
+
+        .navbar {
+            min-height: 72px;
+
+            background:
+                rgba(2, 10, 25, 0.82) !important;
+
+            border-bottom:
+                1px solid rgba(0, 174, 255, 0.28);
+
+            backdrop-filter: blur(18px);
+
+            box-shadow:
+                0 0 30px rgba(0, 128, 255, 0.08);
+        }
+
+        .navbar-brand {
+            font-family: "Orbitron", sans-serif;
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+
+            color: #00c8ff !important;
+
+            text-shadow:
+                0 0 8px rgba(0, 200, 255, 0.8),
+                0 0 20px rgba(0, 140, 255, 0.4);
+        }
+
+        .nav-link {
+            color: #8ebbd4 !important;
+            font-family: "Orbitron", sans-serif;
+            font-size: 0.68rem;
+            letter-spacing: 1px;
+
+            transition:
+                color 0.3s ease,
+                transform 0.3s ease,
+                text-shadow 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #00d9ff !important;
+
+            transform: translateY(-2px);
+
+            text-shadow:
+                0 0 8px #00bfff;
+        }
+
+        .active-config {
+            color: #00d9ff !important;
+
+            text-shadow:
+                0 0 10px #00bfff,
+                0 0 25px rgba(0, 191, 255, 0.5);
+        }
+
+        /* =========================================================
+           MAIN
+        ========================================================= */
+
+        .main-container {
+            width: min(1200px, 94%);
+            margin: 45px auto 70px;
+        }
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+
+        .config-header {
+            position: relative;
+            padding: 32px;
+
+            border:
+                1px solid rgba(0, 190, 255, 0.28);
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(4, 27, 53, 0.88),
+                    rgba(3, 15, 34, 0.82)
+                );
+
+            box-shadow:
+                0 0 30px rgba(0, 153, 255, 0.08),
+                inset 0 0 30px rgba(0, 140, 255, 0.025);
+
+            overflow: hidden;
+
+            animation: headerEnter 0.8s ease both;
+        }
+
+        .config-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    #00d9ff,
+                    transparent
+                );
+
+            animation: scanHeader 4s linear infinite;
+        }
+
+        @keyframes scanHeader {
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        @keyframes headerEnter {
+            from {
+                opacity: 0;
+                transform: translateY(-25px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .system-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 6px 12px;
+            margin-bottom: 14px;
+
+            border:
+                1px solid rgba(0, 191, 255, 0.35);
+
+            border-radius: 30px;
+
+            background:
+                rgba(0, 140, 255, 0.07);
+
+            color: #00cfff;
+
+            font-family: "Orbitron", sans-serif;
+            font-size: 0.62rem;
+            letter-spacing: 1.5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+
+            background: #00ffcc;
+
+            box-shadow:
+                0 0 8px #00ffcc;
+
+            animation: statusPulse 1.4s infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.4;
+                transform: scale(0.65);
+            }
+        }
+
+        .config-title {
+            margin: 0;
+
+            font-family: "Orbitron", sans-serif;
+            font-size: clamp(1.7rem, 4vw, 3rem);
+            font-weight: 800;
+            letter-spacing: 2px;
+
+            color: #e9fbff;
+
+            text-shadow:
+                0 0 12px rgba(0, 200, 255, 0.55);
+        }
+
+        .config-title span {
+            color: #00cfff;
+        }
+
+        .config-description {
+            margin-top: 12px;
+            margin-bottom: 0;
+
+            color: #719bb5;
+            font-size: 1rem;
+        }
+
+        .user-terminal {
+            margin-top: 22px;
+
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .terminal-badge {
+            padding: 8px 14px;
+
+            border:
+                1px solid rgba(0, 191, 255, 0.22);
+
+            border-radius: 8px;
+
+            background:
+                rgba(0, 120, 255, 0.06);
+
+            color: #82c7e8;
+
+            font-family: "Orbitron", sans-serif;
+            font-size: 0.63rem;
+            letter-spacing: 1px;
+        }
+
+        .terminal-badge strong {
+            color: #00d9ff;
+        }
+
+        /* =========================================================
+           SECTION GRID
+        ========================================================= */
+
+        .settings-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 22px;
+
+            margin-top: 22px;
+        }
+
+        /* =========================================================
+           CONFIG CARD
+        ========================================================= */
+
+        .config-card {
+            position: relative;
+
+            padding: 25px;
+
+            border:
+                1px solid rgba(0, 170, 255, 0.22);
+
+            border-radius: 18px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(5, 30, 57, 0.85),
+                    rgba(3, 16, 34, 0.88)
+                );
+
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.25),
+                inset 0 0 25px rgba(0, 150, 255, 0.02);
+
+            overflow: hidden;
+
+            transition:
+                transform 0.35s ease,
+                border-color 0.35s ease,
+                box-shadow 0.35s ease;
+
+            animation: cardEnter 0.7s ease both;
+        }
+
+        .config-card:nth-child(2) {
+            animation-delay: 0.08s;
+        }
+
+        .config-card:nth-child(3) {
+            animation-delay: 0.16s;
+        }
+
+        .config-card:nth-child(4) {
+            animation-delay: 0.24s;
+        }
+
+        .config-card:hover {
+            transform: translateY(-5px);
+
+            border-color:
+                rgba(0, 210, 255, 0.48);
+
+            box-shadow:
+                0 20px 55px rgba(0, 119, 255, 0.13),
+                0 0 25px rgba(0, 170, 255, 0.05);
+        }
+
+        .config-card::after {
+            content: "";
+
+            position: absolute;
+
+            width: 80px;
+            height: 80px;
+
+            right: -40px;
+            bottom: -40px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(0, 190, 255, 0.08);
+
+            filter: blur(5px);
+        }
+
+        @keyframes cardEnter {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-heading {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+
+            padding-bottom: 17px;
+            margin-bottom: 8px;
+
+            border-bottom:
+                1px solid rgba(0, 180, 255, 0.12);
+        }
+
+        .heading-icon {
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border:
+                1px solid rgba(0, 191, 255, 0.35);
+
+            border-radius: 11px;
+
+            background:
+                rgba(0, 145, 255, 0.09);
+
+            color: #00cfff;
+
+            font-size: 1.15rem;
+
+            box-shadow:
+                0 0 16px rgba(0, 174, 255, 0.08);
+        }
+
+        .card-heading h2 {
+            margin: 0;
+
+            font-family: "Orbitron", sans-serif;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+
+            color: #d8f5ff;
+        }
+
+        .card-heading p {
+            margin: 3px 0 0;
+
+            color: #638ca5;
+            font-size: 0.8rem;
+        }
+
+        /* =========================================================
+           SETTING ROW
+        ========================================================= */
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+
+            padding: 17px 0;
+
+            border-bottom:
+                1px solid rgba(0, 180, 255, 0.08);
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-name {
+            display: block;
+
+            color: #bfeaff;
+
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .setting-help {
+            display: block;
+
+            margin-top: 3px;
+
+            color: #5e849c;
+
+            font-size: 0.78rem;
+            line-height: 1.4;
+        }
+
+        /* =========================================================
+           CYBER SWITCH
+        ========================================================= */
+
+        .switch {
+            position: relative;
+
+            flex-shrink: 0;
+
+            width: 52px;
+            height: 27px;
+        }
+
+        .switch input {
+            display: none;
+        }
+
+        .slider {
+            position: absolute;
+            inset: 0;
+
+            cursor: pointer;
+
+            border:
+                1px solid rgba(0, 180, 255, 0.25);
+
+            border-radius: 30px;
+
+            background:
+                #061a2e;
+
+            transition: 0.3s;
+        }
+
+        .slider::before {
+            content: "";
+
+            position: absolute;
+
+            width: 19px;
+            height: 19px;
+
+            left: 3px;
+            top: 3px;
+
+            border-radius: 50%;
+
+            background: #58758a;
+
+            transition: 0.3s;
+
+            box-shadow:
+                0 0 5px rgba(0, 0, 0, 0.4);
+        }
+
+        .switch input:checked + .slider {
+            background:
+                rgba(0, 160, 255, 0.22);
+
+            border-color:
+                rgba(0, 210, 255, 0.65);
+
+            box-shadow:
+                0 0 14px rgba(0, 190, 255, 0.2);
+        }
+
+        .switch input:checked + .slider::before {
+            transform: translateX(25px);
+
+            background: #00d9ff;
+
+            box-shadow:
+                0 0 10px #00d9ff,
+                0 0 20px rgba(0, 217, 255, 0.55);
+        }
+
+        /* =========================================================
+           SELECT
+        ========================================================= */
+
+        .cyber-select {
+            width: 155px;
+
+            padding: 9px 12px;
+
+            border:
+                1px solid rgba(0, 174, 255, 0.3);
+
+            border-radius: 8px;
+
+            outline: none;
+
+            color: #aeeaff;
+
+            background:
+                #041525;
+
+            font-family: "Rajdhani", sans-serif;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+        .cyber-select:hover,
+        .cyber-select:focus {
+            border-color: #00cfff;
+
+            box-shadow:
+                0 0 12px rgba(0, 190, 255, 0.18);
+        }
+
+        .cyber-select option {
+            background: #031322;
+            color: #d8f6ff;
+        }
+
+        /* =========================================================
+           RANGE
+        ========================================================= */
+
+        .range-box {
+            width: 160px;
+        }
+
+        .range-value {
+            display: block;
+
+            margin-bottom: 5px;
+
+            text-align: right;
+
+            color: #00d9ff;
+
+            font-family: "Orbitron", sans-serif;
+            font-size: 0.7rem;
+        }
+
+        .cyber-range {
+            width: 100%;
+            accent-color: #00cfff;
+            cursor: pointer;
+        }
+
+        /* =========================================================
+           ACCOUNT PANEL
+        ========================================================= */
+
+        .account-panel {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 12px;
+
+            margin-top: 15px;
+        }
+
+        .account-item {
+            padding: 13px;
+
+            border:
+                1px solid rgba(0, 170, 255, 0.13);
+
+            border-radius: 9px;
+
+            background:
+                rgba(0, 100, 180, 0.035);
+        }
+
+        .account-item small {
+            display: block;
+
+            color: #557b93;
+
+            font-family: "Orbitron", sans-serif;
+            font-size: 0.58rem;
+            letter-spacing: 0.8px;
+        }
+
+        .account-item strong {
+            display: block;
+
+            margin-top: 4px;
+
+            color: #9fdef5;
+
+            font-size: 0.9rem;
+
+            overflow-wrap: anywhere;
+        }
+
+        /* =========================================================
+           BUTTONS
+        ========================================================= */
+
+        .action-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 13px;
+
+            margin-top: 25px;
+        }
+
+        .cyber-btn {
+            position: relative;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+
+            min-height: 46px;
+
+            padding: 11px 20px;
+
+            border-radius: 9px;
+
+            font-family: "Orbitron", sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+
+            cursor: pointer;
+
+            overflow: hidden;
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+        .cyber-btn::before {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: -120%;
+
+            width: 70%;
+            height: 100%;
+
+            transform: skewX(-25deg);
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.15),
+                    transparent
+                );
+
+            transition: left 0.6s ease;
+        }
+
+        .cyber-btn:hover::before {
+            left: 150%;
+        }
+
+        .cyber-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-save {
+            color: #001521;
+
+            border:
+                1px solid #00cfff;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #00cfff,
+                    #008cff
+                );
+
+            box-shadow:
+                0 0 18px rgba(0, 191, 255, 0.2);
+        }
+
+        .btn-save:hover {
+            box-shadow:
+                0 0 25px rgba(0, 191, 255, 0.5),
+                0 0 50px rgba(0, 140, 255, 0.15);
+        }
+
+        .btn-reset {
+            color: #8db3c7;
+
+            border:
+                1px solid rgba(100, 160, 190, 0.3);
+
+            background:
+                rgba(10, 35, 55, 0.7);
+        }
+
+        .btn-reset:hover {
+            color: #d5f4ff;
+
+            border-color:
+                rgba(0, 190, 255, 0.45);
+        }
+
+        /* =========================================================
+           SAVE STATUS
+        ========================================================= */
+
+        .save-status {
+            min-height: 24px;
+
+            margin-top: 13px;
+
+            color: #00ffcc;
+
+            font-family: "Orbitron", sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 0.8px;
+
+            opacity: 0;
+            transform: translateY(5px);
+
+            transition:
+                opacity 0.3s ease,
+                transform 0.3s ease;
+        }
+
+        .save-status.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        .system-footer {
+            margin-top: 35px;
+
+            padding: 18px;
+
+            text-align: center;
+
+            border-top:
+                1px solid rgba(0, 180, 255, 0.12);
+
+            color: #496f86;
+
+            font-family: "Orbitron", sans-serif;
+            font-size: 0.58rem;
+            letter-spacing: 1px;
+        }
+
+        .system-footer span {
+            color: #00bfff;
+        }
+
+        /* =========================================================
+           TOAST
+        ========================================================= */
+
+        .cyber-toast {
+            position: fixed;
+
+            right: 25px;
+            bottom: 25px;
+
+            z-index: 9999;
+
+            min-width: 260px;
+
+            padding: 15px 18px;
+
+            border:
+                1px solid rgba(0, 205, 255, 0.5);
+
+            border-radius: 10px;
+
+            background:
+                rgba(2, 20, 37, 0.95);
+
+            color: #bceeff;
+
+            box-shadow:
+                0 0 25px rgba(0, 174, 255, 0.2);
+
+            font-family: "Orbitron", sans-serif;
+            font-size: 0.65rem;
+
+            transform: translateY(130px);
+            opacity: 0;
+
+            transition:
+                transform 0.35s ease,
+                opacity 0.35s ease;
+        }
+
+        .cyber-toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 850px) {
+
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar-brand {
+                font-size: 0.8rem;
+            }
+
+            .config-header {
+                padding: 25px;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .main-container {
+                width: 92%;
+                margin-top: 25px;
+            }
+
+            .config-header {
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+            .config-card {
+                padding: 19px;
+            }
+
+            .setting-row {
+                align-items: flex-start;
+            }
+
+            .account-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .cyber-select,
+            .range-box {
+                width: 120px;
+            }
+
+            .action-area {
+                flex-direction: column;
+            }
+
+            .cyber-btn {
+                width: 100%;
+            }
+
+            .cyber-toast {
+                right: 15px;
+                left: 15px;
+                bottom: 15px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================================================
+         PARTICLES
+    ========================================================== -->
+
+    <div class="particles">
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+    </div>
+
+    <div class="orb orb-one"></div>
+    <div class="orb orb-two"></div>
+
+
+    <!-- =========================================================
+         NAVBAR
+    ========================================================== -->
+
+    <nav class="navbar navbar-expand-lg">
+
+        <div class="container-fluid px-4">
+
+            <a
+                class="navbar-brand"
+                href="{{ url_for('home') }}"
+            >
+                🧠 QUIZ_STUDENT_OS
+            </a>
+
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#studentNav"
+                aria-controls="studentNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div
+                class="collapse navbar-collapse"
+                id="studentNav"
+            >
+
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+
+                    <li class="nav-item">
+                        <a
+                            class="nav-link"
+                            href="{{ url_for('home') }}"
+                        >
+                            NODE:HOME
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a
+                            class="nav-link"
+                            href="{{ url_for('student_summary') }}"
+                        >
+                            ANALYTICS
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a
+                            class="nav-link"
+                            href="{{ url_for('profile') }}"
+                        >
+                            USER:PROFILE
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a
+                            class="nav-link active-config"
+                            href="{{ url_for('stu_config') }}"
+                        >
+                            CONFIG
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a
+                            class="nav-link text-danger fw-bold"
+                            href="{{ url_for('logout') }}"
+                        >
+                            TERMINATE_SESSION
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================================================
+         MAIN
+    ========================================================== -->
+
+    <main class="main-container">
+
+        <!-- HEADER -->
+
+        <section class="config-header">
+
+            <div class="system-label">
+                <span class="status-dot"></span>
+                SYSTEM ONLINE
+            </div>
+
+            <h1 class="config-title">
+                STUDENT <span>CONFIG</span>
+            </h1>
+
+            <p class="config-description">
+                Configure your quiz environment, interface behaviour,
+                result preferences and student session experience.
+            </p>
+
+            <div class="user-terminal">
+
+                <div class="terminal-badge">
+                    USER:
+                    <strong>
+                        {{ username|default("Student") }}
+                    </strong>
+                </div>
+
+                <div class="terminal-badge">
+                    ROLE:
+                    <strong>STUDENT</strong>
+                </div>
+
+                <div class="terminal-badge">
+                    STATUS:
+                    <strong>ACTIVE</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SETTINGS GRID -->
+
+        <section class="settings-grid">
+
+
+            <!-- =================================================
+                 INTERFACE
+            ================================================== -->
+
+            <div class="config-card">
+
+                <div class="card-heading">
+
+                    <div class="heading-icon">
+                        <i class="bi bi-display"></i>
+                    </div>
+
+                    <div>
+                        <h2>INTERFACE PROTOCOL</h2>
+                        <p>Customize the visual experience.</p>
+                    </div>
+
+                </div>
+
+
+                <!-- Animation -->
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Interface Animations
+                        </span>
+
+                        <span class="setting-help">
+                            Enable animated transitions and cyber effects.
+                        </span>
+
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            id="animations"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- Particles -->
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Particle Network
+                        </span>
+
+                        <span class="setting-help">
+                            Show floating system particles.
+                        </span>
+
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            id="particlesToggle"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- Scanline -->
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Cyber Scanlines
+                        </span>
+
+                        <span class="setting-help">
+                            Display the futuristic screen scan effect.
+                        </span>
+
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            id="scanlines"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- Density -->
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Interface Density
+                        </span>
+
+                        <span class="setting-help">
+                            Select the amount of information shown.
+                        </span>
+
+                    </div>
+
+                    <select
+                        class="cyber-select"
+                        id="density"
+                    >
+
+                        <option value="comfortable">
+                            Comfortable
+                        </option>
+
+                        <option value="compact">
+                            Compact
+                        </option>
+
+                        <option value="expanded">
+                            Expanded
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 QUIZ
+            ================================================== -->
+
+            <div class="config-card">
+
+                <div class="card-heading">
+
+                    <div class="heading-icon">
+                        <i class="bi bi-controller"></i>
+                    </div>
+
+                    <div>
+                        <h2>QUIZ PROTOCOL</h2>
+                        <p>Control quiz behaviour.</p>
+                    </div>
+
+                </div>
+
+
+                <!-- Confirm start -->
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Confirm Quiz Start
+                        </span>
+
+                        <span class="setting-help">
+                            Ask for confirmation before starting a quiz.
+                        </span>
+
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            id="confirmStart"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- Confirm submit -->
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Confirm Submission
+                        </span>
+
+                        <span class="setting-help">
+                            Confirm before submitting final answers.
+                        </span>
+
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            id="confirmSubmit"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- Timer warning -->
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Timer Warning
+                        </span>
+
+                        <span class="setting-help">
+                            Show warning when quiz time is nearly finished.
+                        </span>
+
+                    </div>
+
+                    <select
+                        class="cyber-select"
+                        id="timerWarning"
+                    >
+
+                        <option value="5">5 Minutes</option>
+                        <option value="10">10 Minutes</option>
+                        <option value="15">15 Minutes</option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Question navigation -->
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Question Navigation
+                        </span>
+
+                        <span class="setting-help">
+                            Choose how questions are navigated.
+                        </span>
+
+                    </div>
+
+                    <select
+                        class="cyber-select"
+                        id="navigation"
+                    >
+
+                        <option value="free">
+                            Free Navigation
+                        </option>
+
+                        <option value="sequential">
+                            Sequential
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 RESULT ANALYTICS
+            ================================================== -->
+
+            <div class="config-card">
+
+                <div class="card-heading">
+
+                    <div class="heading-icon">
+                        <i class="bi bi-bar-chart-line"></i>
+                    </div>
+
+                    <div>
+                        <h2>RESULT ANALYTICS</h2>
+                        <p>Configure result analysis.</p>
+                    </div>
+
+                </div>
+
+
+                <!-- Detailed results -->
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Detailed Analysis
+                        </span>
+
+                        <span class="setting-help">
+                            Show detailed quiz performance information.
+                        </span>
+
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            id="detailedResults"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- Correct answers -->
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Correct Answer Review
+                        </span>
+
+                        <span class="setting-help">
+                            Show correct answers after submission.
+                        </span>
+
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            id="correctAnswers"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- Charts -->
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Performance Charts
+                        </span>
+
+                        <span class="setting-help">
+                            Display graphical performance analysis.
+                        </span>
+
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            id="charts"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- History -->
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Quiz History
+                        </span>
+
+                        <span class="setting-help">
+                            Keep previous quiz attempts visible.
+                        </span>
+
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            id="history"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 EXPERIENCE
+            ================================================== -->
+
+            <div class="config-card">
+
+                <div class="card-heading">
+
+                    <div class="heading-icon">
+                        <i class="bi bi-cpu"></i>
+                    </div>
+
+                    <div>
+                        <h2>STUDENT EXPERIENCE</h2>
+                        <p>Fine tune your learning environment.</p>
+                    </div>
+
+                </div>
+
+
+                <!-- Difficulty -->
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Preferred Difficulty
+                        </span>
+
+                        <span class="setting-help">
+                            Select your preferred quiz difficulty.
+                        </span>
+
+                    </div>
+
+                    <select
+                        class="cyber-select"
+                        id="difficulty"
+                    >
+
+                        <option value="all">
+                            All Levels
+                        </option>
+
+                        <option value="easy">
+                            Easy
+                        </option>
+
+                        <option value="medium">
+                            Medium
+                        </option>
+
+                        <option value="hard">
+                            Hard
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Sound -->
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            System Sound
+                        </span>
+
+                        <span class="setting-help">
+                            Enable interface sound notifications.
+                        </span>
+
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            id="sound"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- Auto focus -->
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Auto Focus
+                        </span>
+
+                        <span class="setting-help">
+                            Automatically focus quiz interaction areas.
+                        </span>
+
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            id="autoFocus"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- Text scale -->
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Text Scale
+                        </span>
+
+                        <span class="setting-help">
+                            Adjust interface text size.
+                        </span>
+
+                    </div>
+
+                    <div class="range-box">
+
+                        <span
+                            class="range-value"
+                            id="fontValue"
+                        >
+                            100%
+                        </span>
+
+                        <input
+                            type="range"
+                            class="cyber-range"
+                            id="fontScale"
+                            min="90"
+                            max="115"
+                            value="100"
+                            step="5"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 ACCOUNT INFORMATION
+            ================================================== -->
+
+            <div class="config-card">
+
+                <div class="card-heading">
+
+                    <div class="heading-icon">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+
+                    <div>
+                        <h2>ACCOUNT NODE</h2>
+                        <p>Current student session information.</p>
+                    </div>
+
+                </div>
+
+
+                <div class="account-panel">
+
+                    <div class="account-item">
+
+                        <small>USERNAME</small>
+
+                        <strong>
+                            {{ username|default("Student") }}
+                        </strong>
+
+                    </div>
+
+                    <div class="account-item">
+
+                        <small>ROLE</small>
+
+                        <strong>
+                            STUDENT
+                        </strong>
+
+                    </div>
+
+                    <div class="account-item">
+
+                        <small>SESSION</small>
+
+                        <strong>
+                            ACTIVE
+                        </strong>
+
+                    </div>
+
+                    <div class="account-item">
+
+                        <small>ACCESS</small>
+
+                        <strong>
+                            STUDENT_NODE
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 SYSTEM INFORMATION
+            ================================================== -->
+
+            <div class="config-card">
+
+                <div class="card-heading">
+
+                    <div class="heading-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+
+                    <div>
+                        <h2>SYSTEM STATUS</h2>
+                        <p>Quiz Master environment status.</p>
+                    </div>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Authentication
+                        </span>
+
+                        <span class="setting-help">
+                            Current student session authentication.
+                        </span>
+
+                    </div>
+
+                    <span
+                        style="
+                            color:#00ffcc;
+                            font-family:'Orbitron',sans-serif;
+                            font-size:.65rem;
+                        "
+                    >
+                        VERIFIED
+                    </span>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Configuration Storage
+                        </span>
+
+                        <span class="setting-help">
+                            Browser-based configuration storage.
+                        </span>
+
+                    </div>
+
+                    <span
+                        style="
+                            color:#00d9ff;
+                            font-family:'Orbitron',sans-serif;
+                            font-size:.65rem;
+                        "
+                    >
+                        LOCAL
+                    </span>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div class="setting-info">
+
+                        <span class="setting-name">
+                            Interface Protocol
+                        </span>
+
+                        <span class="setting-help">
+                            Current visual system.
+                        </span>
+
+                    </div>
+
+                    <span
+                        style="
+                            color:#00d9ff;
+                            font-family:'Orbitron',sans-serif;
+                            font-size:.65rem;
+                        "
+                    >
+                        CYBER_BLUE
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ACTION BUTTONS
+        ================================================== -->
+
+        <div class="action-area">
+
+            <button
+                type="button"
+                class="cyber-btn btn-save"
+                id="saveSettings"
+            >
+                <i class="bi bi-cloud-arrow-up"></i>
+                SAVE CONFIGURATION
+            </button>
+
+            <button
+                type="button"
+                class="cyber-btn btn-reset"
+                id="resetSettings"
+            >
+                <i class="bi bi-arrow-counterclockwise"></i>
+                RESET DEFAULTS
+            </button>
+
+        </div>
+
+        <div
+            class="save-status"
+            id="saveStatus"
+        >
+            ✓ CONFIGURATION SAVED SUCCESSFULLY
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <footer class="system-footer">
+
+            QUIZ MASTER //
+            STUDENT CONFIGURATION NODE //
+            <span>SYSTEM ONLINE</span>
+
+        </footer>
+
+    </main>
+
+
+    <!-- TOAST -->
+
+    <div
+        class="cyber-toast"
+        id="toast"
+    >
+        CONFIGURATION UPDATED
+    </div>
+
+
+    <!-- Bootstrap JS -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    ></script>
+
+
+    <script>
+
+        /* =========================================================
+           CONFIGURATION SYSTEM
+        ========================================================= */
+
+        const STORAGE_KEY = "quiz_master_student_config";
+
+
+        const defaultSettings = {
+
+            animations: true,
+
+            particlesToggle: true,
+
+            scanlines: true,
+
+            density: "comfortable",
+
+            confirmStart: true,
+
+            confirmSubmit: true,
+
+            timerWarning: "5",
+
+            navigation: "free",
+
+            detailedResults: true,
+
+            correctAnswers: true,
+
+            charts: true,
+
+            history: true,
+
+            difficulty: "all",
+
+            sound: true,
+
+            autoFocus: true,
+
+            fontScale: "100"
+
+        };
+
+
+        /* =========================================================
+           ELEMENT HELPERS
+        ========================================================= */
+
+        function getElement(id) {
+
+            return document.getElementById(id);
+
+        }
+
+
+        /* =========================================================
+           APPLY SETTINGS
+        ========================================================= */
+
+        function applySettings(settings) {
+
+            const checkboxIds = [
+
+                "animations",
+                "particlesToggle",
+                "scanlines",
+                "confirmStart",
+                "confirmSubmit",
+                "detailedResults",
+                "correctAnswers",
+                "charts",
+                "history",
+                "sound",
+                "autoFocus"
+
+            ];
+
+
+            checkboxIds.forEach(function(id) {
+
+                const element = getElement(id);
+
+                if (element && typeof settings[id] !== "undefined") {
+
+                    element.checked = Boolean(settings[id]);
+
+                }
+
+            });
+
+
+            const selectIds = [
+
+                "density",
+                "timerWarning",
+                "navigation",
+                "difficulty"
+
+            ];
+
+
+            selectIds.forEach(function(id) {
+
+                const element = getElement(id);
+
+                if (element && typeof settings[id] !== "undefined") {
+
+                    element.value = settings[id];
+
+                }
+
+            });
+
+
+            const fontScale = getElement("fontScale");
+
+            const fontValue = getElement("fontValue");
+
+
+            if (fontScale) {
+
+                fontScale.value =
+                    settings.fontScale || "100";
+
+            }
+
+
+            if (fontValue) {
+
+                fontValue.textContent =
+                    (settings.fontScale || "100") + "%";
+
+            }
+
+
+            updateVisualSettings();
+
+        }
+
+
+        /* =========================================================
+           READ SETTINGS
+        ========================================================= */
+
+        function readSettings() {
+
+            return {
+
+                animations:
+                    getElement("animations").checked,
+
+                particlesToggle:
+                    getElement("particlesToggle").checked,
+
+                scanlines:
+                    getElement("scanlines").checked,
+
+                density:
+                    getElement("density").value,
+
+                confirmStart:
+                    getElement("confirmStart").checked,
+
+                confirmSubmit:
+                    getElement("confirmSubmit").checked,
+
+                timerWarning:
+                    getElement("timerWarning").value,
+
+                navigation:
+                    getElement("navigation").value,
+
+                detailedResults:
+                    getElement("detailedResults").checked,
+
+                correctAnswers:
+                    getElement("correctAnswers").checked,
+
+                charts:
+                    getElement("charts").checked,
+
+                history:
+                    getElement("history").checked,
+
+                difficulty:
+                    getElement("difficulty").value,
+
+                sound:
+                    getElement("sound").checked,
+
+                autoFocus:
+                    getElement("autoFocus").checked,
+
+                fontScale:
+                    getElement("fontScale").value
+
+            };
+
+        }
+
+
+        /* =========================================================
+           VISUAL SETTINGS
+        ========================================================= */
+
+        function updateVisualSettings() {
+
+            const animations =
+                getElement("animations").checked;
+
+            const particlesToggle =
+                getElement("particlesToggle").checked;
+
+            const scanlines =
+                getElement("scanlines").checked;
+
+
+            /* Particles */
+
+            const particleLayer =
+                document.querySelector(".particles");
+
+            if (particleLayer) {
+
+                particleLayer.style.display =
+                    particlesToggle ? "block" : "none";
+
+            }
+
+
+            /* Scanlines */
+
+            document.body.classList.toggle(
+                "scanlines-disabled",
+                !scanlines
+            );
+
+
+            /* Animation */
+
+            if (!animations) {
+
+                document.body.classList.add(
+                    "animations-disabled"
+                );
+
+            } else {
+
+                document.body.classList.remove(
+                    "animations-disabled"
+                );
+
+            }
+
+
+            /* Font scale */
+
+            const scale =
+                parseInt(
+                    getElement("fontScale").value,
+                    10
+                ) || 100;
+
+            document.documentElement.style.setProperty(
+                "--student-font-scale",
+                scale / 100
+            );
+
+
+            getElement("fontValue").textContent =
+                scale + "%";
+
+        }
+
+
+        /* =========================================================
+           LOAD SAVED SETTINGS
+        ========================================================= */
+
+        function loadSettings() {
+
+            let savedSettings = null;
+
+
+            try {
+
+                const stored =
+                    localStorage.getItem(STORAGE_KEY);
+
+                if (stored) {
+
+                    savedSettings =
+                        JSON.parse(stored);
+
+                }
+
+            } catch (error) {
+
+                savedSettings = null;
+
+            }
+
+
+            const finalSettings = {
+
+                ...defaultSettings,
+
+                ...(savedSettings || {})
+
+            };
+
+
+            applySettings(finalSettings);
+
+        }
+
+
+        /* =========================================================
+           SAVE SETTINGS
+        ========================================================= */
+
+        function saveSettings() {
+
+            const settings =
+                readSettings();
+
+
+            try {
+
+                localStorage.setItem(
+                    STORAGE_KEY,
+                    JSON.stringify(settings)
+                );
+
+            } catch (error) {
+
+                showToast(
+                    "LOCAL STORAGE UNAVAILABLE"
+                );
+
+                return;
+
+            }
+
+
+            showToast(
+                "CONFIGURATION SAVED"
+            );
+
+
+            const saveStatus =
+                getElement("saveStatus");
+
+
+            saveStatus.classList.add("show");
+
+
+            setTimeout(function() {
+
+                saveStatus.classList.remove("show");
+
+            }, 3000);
+
+        }
+
+
+        /* =========================================================
+           RESET SETTINGS
+        ========================================================= */
+
+        function resetSettings() {
+
+            const confirmed =
+                window.confirm(
+                    "Reset all student configuration settings to default?"
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            try {
+
+                localStorage.removeItem(
+                    STORAGE_KEY
+                );
+
+            } catch (error) {
+
+                /* Ignore storage error */
+
+            }
+
+
+            applySettings(
+                { ...defaultSettings }
+            );
+
+
+            showToast(
+                "DEFAULT CONFIGURATION RESTORED"
+            );
+
+        }
+
+
+        /* =========================================================
+           TOAST
+        ========================================================= */
+
+        let toastTimer;
+
+
+        function showToast(message) {
+
+            const toast =
+                getElement("toast");
+
+
+            toast.textContent =
+                "✓ " + message;
+
+
+            toast.classList.add("show");
+
+
+            clearTimeout(toastTimer);
+
+
+            toastTimer =
+                setTimeout(function() {
+
+                    toast.classList.remove(
+                        "show"
+                    );
+
+                }, 2500);
+
+        }
+
+
+        /* =========================================================
+           EVENT LISTENERS
+        ========================================================= */
+
+        document
+            .querySelectorAll(
+                ".switch input"
+            )
+            .forEach(function(input) {
+
+                input.addEventListener(
+                    "change",
+                    updateVisualSettings
+                );
+
+            });
+
+
+        getElement("fontScale")
+            .addEventListener(
+                "input",
+                updateVisualSettings
+            );
+
+
+        getElement("saveSettings")
+            .addEventListener(
+                "click",
+                saveSettings
+            );
+
+
+        getElement("resetSettings")
+            .addEventListener(
+                "click",
+                resetSettings
+            );
+
+
+        /* =========================================================
+           INITIALIZE
+        ========================================================= */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                loadSettings();
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>
